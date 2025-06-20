@@ -11,153 +11,187 @@
     <!-- Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.min.js"></script>
     
-    <!-- React -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.22.5/babel.min.js"></script>
-    
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     
     <style>
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --success-gradient: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
-            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --dark: #1f2937;
+            --light: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            --blur: blur(16px);
+        }
+        
+        * {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            font-feature-settings: "kern" 1;
+            text-rendering: optimizeLegibility;
         }
         
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
             border-radius: 20px;
+        }
+        
+        .navbar {
+            backdrop-filter: var(--blur);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .metric-card {
-            background: var(--primary-gradient);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             border-radius: 20px;
-            transition: all 0.3s ease;
             border: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-lg);
+            transform-origin: center;
         }
         
         .metric-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
         }
         
-        .metric-card.success { background: var(--success-gradient); }
-        .metric-card.info { background: var(--info-gradient); }
-        .metric-card.warning { background: var(--warning-gradient); }
-        .metric-card.danger { background: var(--danger-gradient); }
+        .metric-card.success { 
+            background: linear-gradient(135deg, var(--success), #059669); 
+        }
+        .metric-card.info { 
+            background: linear-gradient(135deg, var(--info), #0891b2); 
+        }
+        .metric-card.warning { 
+            background: linear-gradient(135deg, var(--warning), #d97706); 
+        }
+        .metric-card.danger { 
+            background: linear-gradient(135deg, var(--danger), #dc2626); 
+        }
         
-        .chart-container {
-            position: relative;
-            height: 350px;
-            padding: 20px;
+        .btn-modern {
+            background: var(--primary);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-modern:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            color: white;
         }
         
         .upload-zone {
-            border: 3px dashed #6c757d;
+            border: 3px dashed #cbd5e1;
             border-radius: 20px;
-            transition: all 0.3s ease;
-            background: rgba(248, 249, 250, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(248, 250, 252, 0.8);
+            backdrop-filter: var(--blur);
             cursor: pointer;
+            transition: all 0.3s ease;
         }
         
         .upload-zone:hover, .upload-zone.dragover {
-            border-color: #0d6efd;
-            background: rgba(13, 110, 253, 0.1);
-            transform: scale(1.02);
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+            transform: scale(1.01);
         }
         
-        .btn-gradient {
-            background: var(--primary-gradient);
-            border: none;
-            color: white;
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.15);
+        }
+        
+        .table-modern {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        
+        .table-modern th {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
             font-weight: 600;
-            transition: all 0.3s ease;
-            border-radius: 15px;
-        }
-        
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            color: white;
-        }
-        
-        .btn-success-gradient {
-            background: var(--success-gradient);
             border: none;
-            color: white;
-            font-weight: 600;
-            border-radius: 15px;
+            padding: 16px;
         }
         
-        .btn-info-gradient {
-            background: var(--info-gradient);
+        .table-modern tbody tr {
             border: none;
-            color: white;
-            font-weight: 600;
-            border-radius: 15px;
+        }
+        
+        .table-modern tbody tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+            transform: translateX(4px);
         }
         
         .status-badge {
             font-weight: 600;
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 50px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         
-        .table-hover tbody tr:hover {
-            background-color: rgba(13, 110, 253, 0.05);
-            transform: translateX(5px);
-            transition: all 0.2s ease;
-        }
-        
         .highlight-cannot-comply {
-            background: linear-gradient(90deg, #ffe6e6 0%, #ffcccc 100%) !important;
-            border-left: 5px solid #dc3545 !important;
+            background: linear-gradient(90deg, #fef2f2, #fee2e2) !important;
+            border-left: 4px solid var(--danger) !important;
         }
         
         .highlight-issue-reported {
-            background: linear-gradient(90deg, #fff3cd 0%, #ffeaa7 100%) !important;
-            border-left: 5px solid #ffc107 !important;
+            background: linear-gradient(90deg, #fffbeb, #fef3c7) !important;
+            border-left: 4px solid var(--warning) !important;
         }
         
-        .animate-fade-in {
-            animation: fadeIn 0.6s ease-out;
+        .insight-card {
+            border-left: 4px solid;
+            border-radius: 0 16px 16px 0;
+            backdrop-filter: var(--blur);
         }
         
-        @keyframes fadeIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(30px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
+        .insight-card:hover {
+            transform: translateX(8px);
         }
+        
+        .insight-card.primary { border-left-color: var(--primary); }
+        .insight-card.success { border-left-color: var(--success); }
+        .insight-card.warning { border-left-color: var(--warning); }
+        .insight-card.danger { border-left-color: var(--danger); }
         
         .loading-spinner {
             width: 3rem;
             height: 3rem;
-            border: 0.3rem solid rgba(13, 110, 253, 0.2);
-            border-top: 0.3rem solid #0d6efd;
+            border: 0.3rem solid rgba(99, 102, 241, 0.2);
+            border-top: 0.3rem solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -167,87 +201,79 @@
             100% { transform: rotate(360deg); }
         }
         
-        .form-control:focus, .form-select:focus {
-            border-color: #764ba2;
-            box-shadow: 0 0 0 0.25rem rgba(118, 75, 162, 0.25);
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
         }
         
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.5rem;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
         }
         
-        .endpoint-input-group {
-            position: relative;
-        }
-        
-        .data-source-tabs .nav-link {
-            border-radius: 15px 15px 0 0;
+        .nav-pills .nav-link {
+            border-radius: 12px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            margin: 0 4px;
         }
         
-        .data-source-tabs .nav-link.active {
-            background: var(--primary-gradient);
+        .nav-pills .nav-link.active {
+            background: var(--primary);
             color: white;
-            border-color: transparent;
         }
-        
-        .insight-card {
-            border-left: 5px solid;
-            border-radius: 0 15px 15px 0;
-            transition: all 0.3s ease;
-        }
-        
-        .insight-card:hover {
-            transform: translateX(10px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .insight-card.primary { border-left-color: #0d6efd; }
-        .insight-card.success { border-left-color: #198754; }
-        .insight-card.warning { border-left-color: #ffc107; }
-        .insight-card.danger { border-left-color: #dc3545; }
         
         .pagination .page-link {
-            border-radius: 10px;
+            border-radius: 8px;
             margin: 0 2px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            border: none;
+            color: var(--primary);
         }
         
         .pagination .page-item.active .page-link {
-            background: var(--primary-gradient);
-            border-color: transparent;
+            background: var(--primary);
+            border-color: var(--primary);
         }
         
-        .icon {
-            display: inline-block;
-            width: 1em;
-            height: 1em;
-            vertical-align: -0.125em;
+        .chart-container {
+            position: relative;
+            height: 300px;
+            padding: 20px;
         }
         
         .cursor-pointer {
             cursor: pointer;
         }
         
-        .bg-purple {
-            background-color: #6f42c1 !important;
+        .text-truncate-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         
-        .text-purple {
-            color: #6f42c1 !important;
+        .badge-modern {
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+        
+        .alert-modern {
+            border-radius: 12px;
+            border: none;
+            backdrop-filter: var(--blur);
         }
     </style>
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark glass-card mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark glass mb-4">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 📊 Task Response Analytics
@@ -261,249 +287,289 @@
     </nav>
 
     <div class="container-fluid px-4">
-        <div id="root"></div>
+        <!-- Alerts -->
+        <div id="alerts-container"></div>
+
+        <!-- Welcome Header -->
+        <div class="text-center mb-5">
+            <div class="glass p-5 fade-in">
+                <h1 class="display-4 fw-bold mb-3">📊 Task Response Analytics</h1>
+                <p class="lead text-muted">Comprehensive analysis and insights for task response data with real-time visualization</p>
+            </div>
+        </div>
+
+        <!-- Data Source Section -->
+        <div id="data-source-section" class="glass p-4 mb-4">
+            <ul class="nav nav-pills mb-4" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="upload-tab" data-tab="upload">📤 Upload File</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="endpoint-tab" data-tab="endpoint">🌐 Fetch from API</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="sample-tab" data-tab="sample">🧪 Try Sample Data</button>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <!-- Upload Tab -->
+                <div id="upload-content" class="tab-pane">
+                    <div class="upload-zone p-5 text-center" id="upload-zone">
+                        <div id="upload-default">
+                            <div style="font-size: 4rem;">📤</div>
+                            <h4 class="mb-3">Drag & Drop JSON File</h4>
+                            <p class="text-muted mb-4">Or click here to browse files</p>
+                            <div class="row">
+                                <div class="col-md-8 mx-auto">
+                                    <div class="alert alert-info alert-modern">
+                                        <strong>💡 Supported Format:</strong>
+                                        <ul class="mb-0 mt-2 text-start">
+                                            <li>JSON files with arrays or objects containing message data</li>
+                                            <li>Required fields: user_name, message_type, status, sent_at</li>
+                                            <li>Supports nested structures with "messages" or "data" properties</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="upload-loading" class="d-none">
+                            <div class="loading-spinner mx-auto mb-3"></div>
+                            <h5 class="text-primary">Processing your data...</h5>
+                        </div>
+                    </div>
+                    <input type="file" id="file-input" accept=".json" class="d-none">
+                </div>
+
+                <!-- Endpoint Tab -->
+                <div id="endpoint-content" class="tab-pane d-none">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-8">
+                            <h4 class="text-center mb-4">🌐 Fetch Data from API Endpoint</h4>
+                            <div class="mb-4">
+                                <div class="input-group input-group-lg">
+                                    <span class="input-group-text">🔗</span>
+                                    <input type="url" class="form-control" id="endpoint-input" 
+                                           placeholder="https://api.example.com/task-responses">
+                                    <button class="btn btn-modern" id="fetch-btn">⬇️ Fetch Data</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Data Tab -->
+                <div id="sample-content" class="tab-pane d-none">
+                    <div class="text-center">
+                        <div style="font-size: 4rem;">🧪</div>
+                        <h4 class="mb-3">Try Sample Data</h4>
+                        <p class="text-muted mb-4">Load 50 sample records to explore the dashboard features</p>
+                        <button class="btn btn-modern btn-lg" id="sample-btn">🚀 Load Sample Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboard-content" class="d-none">
+            <!-- Filters Section -->
+            <div class="glass p-4 mb-4">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">🏷️ Message Type</label>
+                        <select class="form-select" id="filter-type">
+                            <option value="all">All Types</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">✅ Status</label>
+                        <select class="form-select" id="filter-status">
+                            <option value="all">All Statuses</option>
+                            <option value="acknowledged">Acknowledged</option>
+                            <option value="sent">Sent</option>
+                            <option value="cannot_comply">Cannot Comply</option>
+                            <option value="issue_reported">Issue Reported</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">🔍 Search User</label>
+                        <input type="text" class="form-control" id="filter-user" placeholder="Enter user name...">
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-grid">
+                            <button class="btn btn-outline-primary" id="new-data-btn">📂 Load New Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Metrics Cards -->
+            <div class="row g-4 mb-4" id="metrics-cards">
+                <!-- Cards will be populated by JavaScript -->
+            </div>
+
+            <!-- Charts Section -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <div class="glass h-100">
+                        <div class="card-header bg-transparent border-0 pt-4">
+                            <h5 class="card-title mb-0">🥧 Status Distribution</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="status-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="glass h-100">
+                        <div class="card-header bg-transparent border-0 pt-4">
+                            <h5 class="card-title mb-0">📊 Response Rates by Type</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="response-chart"></canvas>
+                            </div>
+                            <div id="response-stats" class="row g-2 mt-2">
+                                <!-- Stats will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Insights Section -->
+            <div class="glass mb-4">
+                <div class="card-header bg-transparent border-0 pt-4">
+                    <button class="btn btn-link text-decoration-none p-0 w-100 text-start" id="insights-toggle">
+                        <h5 class="card-title mb-0">💡 Key Insights & Analytics <span class="float-end">🔽</span></h5>
+                    </button>
+                </div>
+                <div class="card-body" id="insights-body">
+                    <div class="row g-3" id="insights-grid">
+                        <!-- Insights will be populated by JavaScript -->
+                    </div>
+                    <div class="row g-2 mt-3">
+                        <div class="col-auto">
+                            <button class="btn btn-outline-danger" id="highlight-btn">👁️ Highlight Issues</button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-success" id="export-btn">📥 Export Data</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="glass">
+                <div class="card-header bg-transparent border-0 pt-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0" id="table-title">📋 Message Details</h5>
+                        <div class="badge bg-primary fs-6" id="page-badge">Page 1 of 1</div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-modern mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="cursor-pointer" data-sort="user_name">User Name <span class="sort-icon">↕️</span></th>
+                                    <th class="cursor-pointer" data-sort="message_type">Message Type <span class="sort-icon">↕️</span></th>
+                                    <th class="cursor-pointer" data-sort="status">Status <span class="sort-icon">↕️</span></th>
+                                    <th class="cursor-pointer" data-sort="sent_at">Sent Time <span class="sort-icon">↕️</span></th>
+                                    <th>Acknowledged Time</th>
+                                    <th>Message Content</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body">
+                                <!-- Table rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer bg-transparent border-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-muted" id="pagination-info">Showing 0 to 0 of 0 results</div>
+                            <nav>
+                                <ul class="pagination pagination-sm mb-0" id="pagination">
+                                    <!-- Pagination will be populated by JavaScript -->
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="text-center mt-4 p-3 glass">
+                <p class="text-muted mb-0">
+                    ⚙️ Dashboard powered by Vanilla JS, Bootstrap & Chart.js • Last updated: <span id="last-updated"></span>
+                </p>
+            </div>
+        </div>
     </div>
 
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
-
-        const Dashboard = () => {
-            const [data, setData] = useState([]);
-            const [filteredData, setFilteredData] = useState([]);
-            const [isLoading, setIsLoading] = useState(false);
-            const [error, setError] = useState(null);
-            const [success, setSuccess] = useState(null);
-            const [filters, setFilters] = useState({
+    <script>
+        // Application state
+        let state = {
+            data: [],
+            filteredData: [],
+            filters: {
                 messageType: 'all',
                 status: 'all',
                 searchUser: ''
-            });
-            const [currentPage, setCurrentPage] = useState(1);
-            const [highlightIssues, setHighlightIssues] = useState(false);
-            const [showInsights, setShowInsights] = useState(false);
-            const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
-            const [activeTab, setActiveTab] = useState('upload');
-            const [endpoint, setEndpoint] = useState('');
+            },
+            currentPage: 1,
+            itemsPerPage: 12,
+            sortConfig: { key: null, direction: 'asc' },
+            highlightIssues: false,
+            showInsights: true,
+            charts: {
+                status: null,
+                response: null
+            }
+        };
+
+        // Utility functions
+        const showAlert = (message, type = 'info') => {
+            const alertsContainer = document.getElementById('alerts-container');
+            const alertId = `alert-${Date.now()}`;
+            const alertHtml = `
+                <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show alert-modern" role="alert">
+                    ${type === 'danger' ? '⚠️' : type === 'success' ? '✅' : 'ℹ️'} ${message}
+                    <button type="button" class="btn-close" onclick="document.getElementById('${alertId}').remove()"></button>
+                </div>
+            `;
+            alertsContainer.insertAdjacentHTML('beforeend', alertHtml);
             
-            const chartRef = useRef(null);
-            const statusChartRef = useRef(null);
-            const statusChartInstance = useRef(null);
-            const responseChartInstance = useRef(null);
-            const fileInputRef = useRef(null);
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                const alert = document.getElementById(alertId);
+                if (alert) alert.remove();
+            }, 5000);
+        };
 
-            const itemsPerPage = 12;
+        const formatDateTime = (dateString) => {
+            if (!dateString) return 'N/A';
+            try {
+                return new Date(dateString).toLocaleString();
+            } catch {
+                return 'Invalid Date';
+            }
+        };
 
-            // Set current date
-            useEffect(() => {
-                const dateElement = document.getElementById('current-date');
-                if (dateElement) {
-                    dateElement.textContent = new Date().toLocaleDateString();
-                }
-            }, []);
-
-            // Auto-hide alerts
-            useEffect(() => {
-                if (error || success) {
-                    const timer = setTimeout(() => {
-                        setError(null);
-                        setSuccess(null);
-                    }, 5000);
-                    return () => clearTimeout(timer);
-                }
-            }, [error, success]);
-
-            // Sample data for demo
-            const generateSampleData = () => {
-                const messageTypes = ['morning_checkin', 'evening_checkin', 'mid_day_update', 'weekly_report'];
-                const statuses = ['acknowledged', 'sent', 'cannot_comply', 'issue_reported'];
-                const userNames = ['John Doe', 'Jane Smith', 'Mike Johnson', 'Sarah Wilson', 'Tom Brown', 'Lisa Davis'];
-                
-                const sampleData = [];
-                for (let i = 0; i < 50; i++) {
-                    const sentDate = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
-                    const status = statuses[Math.floor(Math.random() * statuses.length)];
-                    
-                    sampleData.push({
-                        id: i + 1,
-                        user_name: userNames[Math.floor(Math.random() * userNames.length)],
-                        message_type: messageTypes[Math.floor(Math.random() * messageTypes.length)],
-                        status: status,
-                        sent_at: sentDate.toISOString(),
-                        acknowledged_at: status === 'acknowledged' ? new Date(sentDate.getTime() + Math.random() * 24 * 60 * 60 * 1000).toISOString() : null,
-                        message_content: `Sample message content for ${messageTypes[Math.floor(Math.random() * messageTypes.length)].replace(/_/g, ' ')}`
-                    });
-                }
-                return sampleData;
+        const getStatusBadge = (status) => {
+            const badges = {
+                acknowledged: '<span class="status-badge bg-success">Acknowledged</span>',
+                sent: '<span class="status-badge bg-secondary">Sent</span>',
+                cannot_comply: '<span class="status-badge bg-danger">Cannot Comply</span>',
+                issue_reported: '<span class="status-badge bg-warning text-dark">Issue Reported</span>'
             };
+            return badges[status] || '<span class="status-badge bg-secondary">Unknown</span>';
+        };
 
-            // Handle file upload
-            const handleFileUpload = async (file) => {
-                if (!file) return;
-                
-                setIsLoading(true);
-                setError(null);
-                
-                try {
-                    const text = await file.text();
-                    const jsonData = JSON.parse(text);
-                    
-                    let dataArray;
-                    if (Array.isArray(jsonData)) {
-                        dataArray = jsonData;
-                    } else if (jsonData.messages && Array.isArray(jsonData.messages)) {
-                        dataArray = jsonData.messages;
-                    } else if (jsonData.data && Array.isArray(jsonData.data)) {
-                        dataArray = jsonData.data;
-                    } else {
-                        throw new Error('Invalid data format: Expected array or object with "messages" or "data" property');
-                    }
-                    
-                    if (dataArray.length === 0) {
-                        throw new Error('No data found: Array is empty');
-                    }
-                    
-                    const requiredFields = ['user_name', 'message_type', 'status', 'sent_at'];
-                    const sampleRecord = dataArray[0];
-                    const missingFields = requiredFields.filter(field => !(field in sampleRecord));
-                    
-                    if (missingFields.length > 0) {
-                        throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
-                    }
-                    
-                    setData(dataArray);
-                    setFilteredData(dataArray);
-                    setCurrentPage(1);
-                    setSuccess(`Successfully loaded ${dataArray.length} records from file!`);
-                    
-                } catch (err) {
-                    setError(`Failed to process file: ${err.message}`);
-                } finally {
-                    setIsLoading(false);
-                }
-            };
-
-          const handleGetRequest = async () => {
-                if (!endpoint.trim()) {
-                    setError('Please enter a valid endpoint URL');
-                    return;
-                }
-
-                setIsLoading(true);
-                setError(null);
-
-                try {
-                    console.log('Fetching from:', endpoint); // Debug log
-                    
-                    const response = await fetch(endpoint, {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                            'ngrok-skip-browser-warning': 'true', // Skip ngrok browser warning
-                            // Add any required authentication headers here
-                            // 'Authorization': 'Bearer your-token',
-                            // 'X-API-Key': 'your-api-key',
-                        },
-                        mode: 'cors'
-                    });
-                    
-                    console.log('Response status:', response.status); // Debug log
-                    console.log('Response headers:', Object.fromEntries(response.headers.entries())); // Debug log
-                    
-                    if (!response.ok) {
-                        // Get the response text to see what the server is actually returning
-                        const responseText = await response.text();
-                        console.log('Error response body:', responseText); // Debug log
-                        
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}. Response: ${responseText.substring(0, 200)}...`);
-                    }
-                    
-                    // Check content type before parsing
-                    const contentType = response.headers.get('content-type');
-                    console.log('Content-Type:', contentType); // Debug log
-                    
-                    if (!contentType || !contentType.includes('application/json')) {
-                        const responseText = await response.text();
-                        console.log('Non-JSON response:', responseText); // Debug log
-                        throw new Error(`Expected JSON response but got: ${contentType}. Response: ${responseText.substring(0, 200)}...`);
-                    }
-                    
-                    const jsonData = await response.json();
-                    console.log('Parsed JSON:', jsonData); // Debug log
-                    
-                    let dataArray;
-                    if (Array.isArray(jsonData)) {
-                        dataArray = jsonData;
-                    } else if (jsonData.messages && Array.isArray(jsonData.messages)) {
-                        dataArray = jsonData.messages;
-                    } else if (jsonData.data && Array.isArray(jsonData.data)) {
-                        dataArray = jsonData.data;
-                    } else {
-                        throw new Error('Invalid response format: Expected array or object with "messages" or "data" property');
-                    }
-                    
-                    if (dataArray.length === 0) {
-                        throw new Error('No data found in response');
-                    }
-                    
-                    const requiredFields = ['user_name', 'message_type', 'status', 'sent_at'];
-                    const sampleRecord = dataArray[0];
-                    const missingFields = requiredFields.filter(field => !(field in sampleRecord));
-                    
-                    if (missingFields.length > 0) {
-                        throw new Error(`Missing required fields in response: ${missingFields.join(', ')}`);
-                    }
-                    
-                    setData(dataArray);
-                    setFilteredData(dataArray);
-                    setCurrentPage(1);
-                    setSuccess(`Successfully fetched ${dataArray.length} records from endpoint!`);
-                    
-                } catch (err) {
-                    console.error('Fetch error:', err); // Debug log
-                    
-                    if (err.name === 'TypeError' && err.message.includes('fetch')) {
-                        setError('Network error: Unable to reach the endpoint. This could be due to CORS restrictions, network issues, or the endpoint being unavailable.');
-                    } else if (err.message.includes('<!DOCTYPE') || err.message.includes('&lt;!DOCTYPE')) {
-                        setError('Server returned HTML instead of JSON. This usually indicates an authentication error, server error, or wrong endpoint URL.');
-                    } else {
-                        setError(`Failed to fetch data: ${err.message}`);
-                    }
-                } finally {
-                    setIsLoading(false);
-                }
-            };
-            // Load sample data
-            const loadSampleData = () => {
-                const sampleData = generateSampleData();
-                setData(sampleData);
-                setFilteredData(sampleData);
-                setCurrentPage(1);
-                setSuccess(`Loaded ${sampleData.length} sample records for demonstration!`);
-            };
-
-            // Drag and drop handlers
-            const handleDragOver = (e) => {
-                e.preventDefault();
-                e.currentTarget.classList.add('dragover');
-            };
-
-            const handleDragLeave = (e) => {
-                e.preventDefault();
-                e.currentTarget.classList.remove('dragover');
-            };
-
-            const handleDrop = (e) => {
-                e.preventDefault();
-                e.currentTarget.classList.remove('dragover');
-                const files = e.dataTransfer.files;
-                if (files.length > 0 && files[0].type === 'application/json') {
-                    handleFileUpload(files[0]);
-                }
-            };
-
-            // Calculate statistics
-            const stats = data.length > 0 ? {
+        const calculateStats = (data) => {
+            const stats = {
                 total: data.length,
                 acknowledged: data.filter(d => d.status === 'acknowledged').length,
                 sent: data.filter(d => d.status === 'sent').length,
@@ -511,1107 +577,740 @@
                 issueReported: data.filter(d => d.status === 'issue_reported').length,
                 messageTypes: [...new Set(data.map(d => d.message_type).filter(type => type != null))].sort(),
                 missingData: data.filter(d => !d.user_name || d.user_name.trim() === '').length
-            } : { total: 0, acknowledged: 0, sent: 0, cannotComply: 0, issueReported: 0, messageTypes: [], missingData: 0 };
-
-            const getResponseRateByType = (messageType) => {
-                if (!messageType) return '0.0';
-                const typeMessages = data.filter(d => d.message_type === messageType);
-                const acknowledgedMessages = typeMessages.filter(d => d.status === 'acknowledged');
-                return typeMessages.length > 0 ? ((acknowledgedMessages.length / typeMessages.length) * 100).toFixed(1) : '0.0';
             };
+            return stats;
+        };
 
+        const generateSampleData = () => {
+            const messageTypes = ['morning_checkin', 'evening_checkin', 'mid_day_update', 'weekly_report'];
+            const statuses = ['acknowledged', 'sent', 'cannot_comply', 'issue_reported'];
+            const userNames = ['John Doe', 'Jane Smith', 'Mike Johnson', 'Sarah Wilson', 'Tom Brown', 'Lisa Davis'];
+            
+            const sampleData = [];
+            for (let i = 0; i < 50; i++) {
+                const sentDate = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
+                const status = statuses[Math.floor(Math.random() * statuses.length)];
+                
+                sampleData.push({
+                    id: i + 1,
+                    user_name: userNames[Math.floor(Math.random() * userNames.length)],
+                    message_type: messageTypes[Math.floor(Math.random() * messageTypes.length)],
+                    status: status,
+                    sent_at: sentDate.toISOString(),
+                    acknowledged_at: status === 'acknowledged' ? new Date(sentDate.getTime() + Math.random() * 24 * 60 * 60 * 1000).toISOString() : null,
+                    message_content: `Sample message content for ${messageTypes[Math.floor(Math.random() * messageTypes.length)].replace(/_/g, ' ')}`
+                });
+            }
+            return sampleData;
+        };
+
+        // Data loading functions
+        const handleFileUpload = async (file) => {
+            if (!file) return;
+            
+            showLoadingState(true);
+            
+            try {
+                const text = await file.text();
+                const jsonData = JSON.parse(text);
+                
+                let dataArray;
+                if (Array.isArray(jsonData)) {
+                    dataArray = jsonData;
+                } else if (jsonData.messages && Array.isArray(jsonData.messages)) {
+                    dataArray = jsonData.messages;
+                } else if (jsonData.data && Array.isArray(jsonData.data)) {
+                    dataArray = jsonData.data;
+                } else {
+                    throw new Error('Invalid data format: Expected array or object with "messages" or "data" property');
+                }
+                
+                if (dataArray.length === 0) {
+                    throw new Error('No data found: Array is empty');
+                }
+                
+                const requiredFields = ['user_name', 'message_type', 'status', 'sent_at'];
+                const sampleRecord = dataArray[0];
+                const missingFields = requiredFields.filter(field => !(field in sampleRecord));
+                
+                if (missingFields.length > 0) {
+                    throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+                }
+                
+                loadData(dataArray);
+                showAlert(`Successfully loaded ${dataArray.length} records from file!`, 'success');
+                
+            } catch (err) {
+                showAlert(`Failed to process file: ${err.message}`, 'danger');
+            } finally {
+                showLoadingState(false);
+            }
+        };
+
+        const handleEndpointFetch = async () => {
+            const endpoint = document.getElementById('endpoint-input').value;
+            if (!endpoint.trim()) {
+                showAlert('Please enter a valid endpoint URL', 'danger');
+                return;
+            }
+
+            showLoadingState(true);
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true'
+                    },
+                    mode: 'cors'
+                });
+                
+                if (!response.ok) {
+                    const responseText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}. Response: ${responseText.substring(0, 200)}...`);
+                }
+                
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const responseText = await response.text();
+                    throw new Error(`Expected JSON response but got: ${contentType}. Response: ${responseText.substring(0, 200)}...`);
+                }
+                
+                const jsonData = await response.json();
+                
+                let dataArray;
+                if (Array.isArray(jsonData)) {
+                    dataArray = jsonData;
+                } else if (jsonData.messages && Array.isArray(jsonData.messages)) {
+                    dataArray = jsonData.messages;
+                } else if (jsonData.data && Array.isArray(jsonData.data)) {
+                    dataArray = jsonData.data;
+                } else {
+                    throw new Error('Invalid response format: Expected array or object with "messages" or "data" property');
+                }
+                
+                if (dataArray.length === 0) {
+                    throw new Error('No data found in response');
+                }
+                
+                const requiredFields = ['user_name', 'message_type', 'status', 'sent_at'];
+                const sampleRecord = dataArray[0];
+                const missingFields = requiredFields.filter(field => !(field in sampleRecord));
+                
+                if (missingFields.length > 0) {
+                    throw new Error(`Missing required fields in response: ${missingFields.join(', ')}`);
+                }
+                
+                loadData(dataArray);
+                showAlert(`Successfully fetched ${dataArray.length} records from endpoint!`, 'success');
+                
+            } catch (err) {
+                if (err.name === 'TypeError' && err.message.includes('fetch')) {
+                    showAlert('Network error: Unable to reach the endpoint. This could be due to CORS restrictions, network issues, or the endpoint being unavailable.', 'danger');
+                } else if (err.message.includes('<!DOCTYPE') || err.message.includes('&lt;!DOCTYPE')) {
+                    showAlert('Server returned HTML instead of JSON. This usually indicates an authentication error, server error, or wrong endpoint URL.', 'danger');
+                } else {
+                    showAlert(`Failed to fetch data: ${err.message}`, 'danger');
+                }
+            } finally {
+                showLoadingState(false);
+            }
+        };
+
+        const loadSampleData = () => {
+            const sampleData = generateSampleData();
+            loadData(sampleData);
+            showAlert(`Loaded ${sampleData.length} sample records for demonstration!`, 'success');
+        };
+
+        const loadData = (data) => {
+            state.data = data;
+            state.filteredData = data;
+            state.currentPage = 1;
+            
+            // Hide data source section and show dashboard
+            document.getElementById('data-source-section').style.display = 'none';
+            document.getElementById('dashboard-content').classList.remove('d-none');
+            document.getElementById('dashboard-content').classList.add('fade-in');
+            
+            // Update filters
+            updateFilters();
+            
+            // Render everything
+            renderMetrics();
+            renderCharts();
+            renderInsights();
+            renderTable();
+            
+            // Update last updated time
+            document.getElementById('last-updated').textContent = new Date().toLocaleString();
+        };
+
+        const showLoadingState = (loading) => {
+            const uploadDefault = document.getElementById('upload-default');
+            const uploadLoading = document.getElementById('upload-loading');
+            const fetchBtn = document.getElementById('fetch-btn');
+            
+            if (loading) {
+                uploadDefault.classList.add('d-none');
+                uploadLoading.classList.remove('d-none');
+                fetchBtn.disabled = true;
+                fetchBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Fetching...';
+            } else {
+                uploadDefault.classList.remove('d-none');
+                uploadLoading.classList.add('d-none');
+                fetchBtn.disabled = false;
+                fetchBtn.innerHTML = '⬇️ Fetch Data';
+            }
+        };
+
+        // Rendering functions
+        const updateFilters = () => {
+            const stats = calculateStats(state.data);
+            const typeSelect = document.getElementById('filter-type');
+            
+            // Clear and rebuild type filter
+            typeSelect.innerHTML = '<option value="all">All Types</option>';
+            stats.messageTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type ? type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Unknown Type';
+                typeSelect.appendChild(option);
+            });
+        };
+
+        const renderMetrics = () => {
+            const stats = calculateStats(state.data);
+            const container = document.getElementById('metrics-cards');
+            
+            // Calculate best performer
             const messageTypeStats = stats.messageTypes.map(type => ({
                 type,
-                total: data.filter(d => d.message_type === type).length,
-                acknowledged: data.filter(d => d.message_type === type && d.status === 'acknowledged').length,
-                responseRate: getResponseRateByType(type)
+                total: state.data.filter(d => d.message_type === type).length,
+                acknowledged: state.data.filter(d => d.message_type === type && d.status === 'acknowledged').length,
+                responseRate: ((state.data.filter(d => d.message_type === type && d.status === 'acknowledged').length / 
+                              state.data.filter(d => d.message_type === type).length) * 100).toFixed(1)
             }));
+            
+            const bestPerformer = messageTypeStats.length > 0 ? 
+                messageTypeStats.reduce((best, current) => 
+                    parseFloat(current.responseRate) > parseFloat(best.responseRate) ? current : best
+                ) : null;
+            
+            container.innerHTML = `
+                <div class="col-lg-3 col-md-6">
+                    <div class="card metric-card text-white h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="card-title opacity-75">Total Messages</h6>
+                                    <h2 class="card-text fw-bold">${stats.total.toLocaleString()}</h2>
+                                    <small class="opacity-75">${stats.messageTypes.length} message types</small>
+                                </div>
+                                <div style="font-size: 3rem; opacity: 0.5;">📊</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card metric-card success text-white h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="card-title opacity-75">Response Rate</h6>
+                                    <h2 class="card-text fw-bold">${((stats.acknowledged / stats.total) * 100).toFixed(1)}%</h2>
+                                    <small class="opacity-75">${stats.acknowledged.toLocaleString()} acknowledged</small>
+                                </div>
+                                <div style="font-size: 3rem; opacity: 0.5;">✅</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card metric-card info text-white h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="card-title opacity-75">Best Performer</h6>
+                                    <h6 class="card-text fw-bold">${bestPerformer ? bestPerformer.type.replace(/_/g, ' ') : 'N/A'}</h6>
+                                    <small class="opacity-75">${bestPerformer ? bestPerformer.responseRate + '% rate' : 'No data'}</small>
+                                </div>
+                                <div style="font-size: 3rem; opacity: 0.5;">🏆</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card metric-card warning text-white h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="card-title opacity-75">Issues Found</h6>
+                                    <h2 class="card-text fw-bold">${stats.cannotComply + stats.issueReported}</h2>
+                                    <small class="opacity-75">Require attention</small>
+                                </div>
+                                <div style="font-size: 3rem; opacity: 0.5;">⚠️</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        };
 
-            // Filter data
-            useEffect(() => {
-                if (data.length === 0) return;
-                
-                let filtered = data;
-
-                if (filters.messageType !== 'all') {
-                    filtered = filtered.filter(d => d.message_type === filters.messageType);
-                }
-
-                if (filters.status !== 'all') {
-                    filtered = filtered.filter(d => d.status === filters.status);
-                }
-
-                if (filters.searchUser) {
-                    filtered = filtered.filter(d => 
-                        d.user_name && d.user_name.toLowerCase().includes(filters.searchUser.toLowerCase())
-                    );
-                }
-
-                setFilteredData(filtered);
-                setCurrentPage(1);
-            }, [filters, data]);
-
-            // Sorting
-            const handleSort = (key) => {
-                let direction = 'asc';
-                if (sortConfig.key === key && sortConfig.direction === 'asc') {
-                    direction = 'desc';
-                }
-                setSortConfig({ key, direction });
-            };
-
-            const sortedData = [...filteredData].sort((a, b) => {
-                if (!sortConfig.key) return 0;
-                
-                const aValue = a[sortConfig.key];
-                const bValue = b[sortConfig.key];
-                
-                if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-                if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-                return 0;
-            });
-
-            // Initialize charts
-            useEffect(() => {
-                if (data.length === 0) return;
-
-                if (statusChartInstance.current) statusChartInstance.current.destroy();
-                if (responseChartInstance.current) responseChartInstance.current.destroy();
-
-                // Status chart
-                if (statusChartRef.current) {
-                    const ctx = statusChartRef.current.getContext('2d');
-                    statusChartInstance.current = new Chart(ctx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: ['Acknowledged', 'Sent/Unacknowledged', 'Cannot Comply', 'Issue Reported'],
-                            datasets: [{
-                                data: [stats.acknowledged, stats.sent, stats.cannotComply, stats.issueReported],
-                                backgroundColor: ['#198754', '#6c757d', '#dc3545', '#ffc107'],
-                                borderWidth: 0,
-                                hoverOffset: 15
-                            }]
+        const renderCharts = () => {
+            const stats = calculateStats(state.data);
+            
+            // Destroy existing charts
+            if (state.charts.status) state.charts.status.destroy();
+            if (state.charts.response) state.charts.response.destroy();
+            
+            // Status chart
+            const statusCtx = document.getElementById('status-chart').getContext('2d');
+            state.charts.status = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Acknowledged', 'Sent/Unacknowledged', 'Cannot Comply', 'Issue Reported'],
+                    datasets: [{
+                        data: [stats.acknowledged, stats.sent, stats.cannotComply, stats.issueReported],
+                        backgroundColor: ['#10b981', '#6b7280', '#ef4444', '#f59e0b'],
+                        borderWidth: 0,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                font: { size: 12, weight: 'bold' }
+                            }
                         },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    position: 'bottom',
-                                    labels: {
-                                        padding: 20,
-                                        usePointStyle: true,
-                                        font: { size: 12, weight: 'bold' }
-                                    }
-                                },
-                                tooltip: {
-                                    callbacks: {
-                                        label: (context) => {
-                                            const percentage = ((context.parsed / stats.total) * 100).toFixed(1);
-                                            return `${context.label}: ${context.parsed} (${percentage}%)`;
-                                        }
-                                    }
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const percentage = ((context.parsed / stats.total) * 100).toFixed(1);
+                                    return `${context.label}: ${context.parsed} (${percentage}%)`;
                                 }
-                            },
-                            cutout: '60%'
+                            }
                         }
-                    });
+                    },
+                    cutout: '60%'
                 }
-
-                // Response rate chart
-                if (chartRef.current && messageTypeStats.length > 0) {
-                    const ctx = chartRef.current.getContext('2d');
-                    responseChartInstance.current = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: messageTypeStats.map(stat => 
-                                stat.type ? stat.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Unknown'
-                            ),
-                            datasets: [{
-                                label: 'Response Rate (%)',
-                                data: messageTypeStats.map(stat => parseFloat(stat.responseRate)),
-                                backgroundColor: ['#0d6efd', '#6f42c1', '#198754', '#ffc107', '#dc3545', '#6c757d'],
-                                borderRadius: 10,
-                                borderSkipped: false,
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    max: 100,
-                                    grid: { color: 'rgba(0,0,0,0.1)' },
-                                    ticks: {
-                                        callback: (value) => value + '%',
-                                        font: { weight: 'bold' }
-                                    }
-                                },
-                                x: {
-                                    grid: { display: false },
-                                    ticks: { font: { weight: 'bold' }, maxRotation: 45 }
+            });
+            
+            // Response rate chart
+            const messageTypeStats = stats.messageTypes.map(type => ({
+                type,
+                total: state.data.filter(d => d.message_type === type).length,
+                acknowledged: state.data.filter(d => d.message_type === type && d.status === 'acknowledged').length,
+                responseRate: ((state.data.filter(d => d.message_type === type && d.status === 'acknowledged').length / 
+                              state.data.filter(d => d.message_type === type).length) * 100).toFixed(1)
+            }));
+            
+            if (messageTypeStats.length > 0) {
+                const responseCtx = document.getElementById('response-chart').getContext('2d');
+                state.charts.response = new Chart(responseCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: messageTypeStats.map(stat => 
+                            stat.type ? stat.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Unknown'
+                        ),
+                        datasets: [{
+                            label: 'Response Rate (%)',
+                            data: messageTypeStats.map(stat => parseFloat(stat.responseRate)),
+                            backgroundColor: ['#6366f1', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#6b7280'],
+                            borderRadius: 10,
+                            borderSkipped: false,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: { color: 'rgba(0,0,0,0.1)' },
+                                ticks: {
+                                    callback: (value) => value + '%',
+                                    font: { weight: 'bold' }
                                 }
                             },
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: {
-                                    callbacks: {
-                                        label: (context) => {
-                                            const stat = messageTypeStats[context.dataIndex];
-                                            return [
-                                                `Response Rate: ${context.parsed.y}%`,
-                                                `Total Messages: ${stat.total}`,
-                                                `Acknowledged: ${stat.acknowledged}`
-                                            ];
-                                        }
+                            x: {
+                                grid: { display: false },
+                                ticks: { font: { weight: 'bold' }, maxRotation: 45 }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        const stat = messageTypeStats[context.dataIndex];
+                                        return [
+                                            `Response Rate: ${context.parsed.y}%`,
+                                            `Total Messages: ${stat.total}`,
+                                            `Acknowledged: ${stat.acknowledged}`
+                                        ];
                                     }
                                 }
                             }
                         }
-                    });
-                }
-
-                return () => {
-                    if (statusChartInstance.current) statusChartInstance.current.destroy();
-                    if (responseChartInstance.current) responseChartInstance.current.destroy();
-                };
-            }, [data, stats]);
-
-            const formatDateTime = (dateString) => {
-                if (!dateString) return 'N/A';
-                try {
-                    return new Date(dateString).toLocaleString();
-                } catch {
-                    return 'Invalid Date';
-                }
-            };
-
-            const getStatusBadge = (status) => {
-                const styles = {
-                    acknowledged: 'bg-success',
-                    sent: 'bg-secondary',
-                    cannot_comply: 'bg-danger',
-                    issue_reported: 'bg-warning text-dark'
-                };
-                const labels = {
-                    acknowledged: 'Acknowledged',
-                    sent: 'Sent',
-                    cannot_comply: 'Cannot Comply',
-                    issue_reported: 'Issue Reported'
-                };
-                return React.createElement('span', {
-                    className: `status-badge ${styles[status]}`
-                }, labels[status]);
-            };
-
-            const exportCSV = () => {
-                const csvContent = [
-                    ['User Name', 'Message Type', 'Status', 'Sent Time', 'Acknowledged Time', 'Message Content'].join(','),
-                    ...sortedData.map(row => [
-                        row.user_name || 'N/A',
-                        row.message_type || 'Unknown',
-                        row.status,
-                        formatDateTime(row.sent_at),
-                        formatDateTime(row.acknowledged_at),
-                        (row.message_content || '').replace(/"/g, '""')
-                    ].map(field => `"${field}"`).join(','))
-                ].join('\n');
-
-                const blob = new Blob([csvContent], { type: 'text/csv' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `task_response_data_${new Date().toISOString().split('T')[0]}.csv`;
-                a.click();
-                window.URL.revokeObjectURL(url);
-            };
-
-            const getSortIcon = (column) => {
-                if (sortConfig.key !== column) {
-                    return '↕️';
-                }
-                return sortConfig.direction === 'asc' ? '↑' : '↓';
-            };
-
-            const paginatedData = sortedData.slice(
-                (currentPage - 1) * itemsPerPage,
-                currentPage * itemsPerPage
-            );
-
-            const totalPages = Math.ceil(sortedData.length / itemsPerPage);
-
-            const getPaginationItems = () => {
-                const items = [];
-                const maxVisible = 5;
-                let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-                let end = Math.min(totalPages, start + maxVisible - 1);
+                    }
+                });
                 
-                if (end - start + 1 < maxVisible) {
-                    start = Math.max(1, end - maxVisible + 1);
-                }
-
-                for (let i = start; i <= end; i++) {
-                    items.push(i);
-                }
-                return items;
-            };
-
-            return React.createElement('div', { className: 'animate-fade-in' }, [
-                // Alerts
-                error && React.createElement('div', {
-                    key: 'error-alert',
-                    className: 'alert alert-danger alert-dismissible fade show',
-                    role: 'alert'
-                }, [
-                    '⚠️ ',
-                    error,
-                    React.createElement('button', {
-                        key: 'close-error',
-                        type: 'button',
-                        className: 'btn-close',
-                        onClick: () => setError(null)
-                    })
-                ]),
-                
-                success && React.createElement('div', {
-                    key: 'success-alert',
-                    className: 'alert alert-success alert-dismissible fade show',
-                    role: 'alert'
-                }, [
-                    '✅ ',
-                    success,
-                    React.createElement('button', {
-                        key: 'close-success',
-                        type: 'button',
-                        className: 'btn-close',
-                        onClick: () => setSuccess(null)
-                    })
-                ]),
-
-                // Welcome Header
-                React.createElement('div', {
-                    key: 'header',
-                    className: 'text-center mb-5'
-                }, React.createElement('div', {
-                    className: 'glass-card p-5'
-                }, [
-                    React.createElement('h1', {
-                        key: 'title',
-                        className: 'display-4 fw-bold mb-3'
-                    }, ['📊 Task Response Analytics']),
-                    React.createElement('p', {
-                        key: 'subtitle',
-                        className: 'lead text-muted'
-                    }, 'Comprehensive analysis and insights for task response data with real-time visualization')
-                ])),
-
-                // Data Source Section
-                data.length === 0 && React.createElement('div', {
-                    key: 'data-source',
-                    className: 'glass-card p-4 mb-4'
-                }, [
-                    React.createElement('ul', {
-                        key: 'tabs',
-                        className: 'nav nav-tabs data-source-tabs mb-4',
-                        role: 'tablist'
-                    }, [
-                        React.createElement('li', {
-                            key: 'upload-tab',
-                            className: 'nav-item',
-                            role: 'presentation'
-                        }, React.createElement('button', {
-                            className: `nav-link ${activeTab === 'upload' ? 'active' : ''}`,
-                            onClick: () => setActiveTab('upload')
-                        }, '📤 Upload File')),
-                        React.createElement('li', {
-                            key: 'endpoint-tab',
-                            className: 'nav-item',
-                            role: 'presentation'
-                        }, React.createElement('button', {
-                            className: `nav-link ${activeTab === 'endpoint' ? 'active' : ''}`,
-                            onClick: () => setActiveTab('endpoint')
-                        }, '🌐 Fetch from API')),
-                        React.createElement('li', {
-                            key: 'sample-tab',
-                            className: 'nav-item',
-                            role: 'presentation'
-                        }, React.createElement('button', {
-                            className: `nav-link ${activeTab === 'sample' ? 'active' : ''}`,
-                            onClick: () => setActiveTab('sample')
-                        }, '🧪 Try Sample Data'))
-                    ]),
-
-                    React.createElement('div', {
-                        key: 'tab-content',
-                        className: 'tab-content'
-                    }, [
-                        // Upload Tab
-                        activeTab === 'upload' && React.createElement('div', {
-                            key: 'upload-content',
-                            className: 'tab-pane fade show active'
-                        }, [
-                            React.createElement('div', {
-                                key: 'upload-zone',
-                                className: 'upload-zone p-5 text-center',
-                                onDragOver: handleDragOver,
-                                onDragLeave: handleDragLeave,
-                                onDrop: handleDrop,
-                                onClick: () => fileInputRef.current?.click()
-                            }, isLoading ? [
-                                React.createElement('div', {
-                                    key: 'loading',
-                                    className: 'loading-spinner mx-auto mb-3'
-                                }),
-                                React.createElement('h5', {
-                                    key: 'loading-text',
-                                    className: 'text-primary'
-                                }, 'Processing your data...')
-                            ] : [
-                                React.createElement('div', {
-                                    key: 'upload-icon',
-                                    style: { fontSize: '4rem' }
-                                }, '📤'),
-                                React.createElement('h4', {
-                                    key: 'upload-title',
-                                    className: 'mb-3'
-                                }, 'Drag & Drop JSON File'),
-                                React.createElement('p', {
-                                    key: 'upload-desc',
-                                    className: 'text-muted mb-4'
-                                }, 'Or click here to browse files'),
-                                React.createElement('div', {
-                                    key: 'upload-info',
-                                    className: 'row'
-                                }, React.createElement('div', {
-                                    className: 'col-md-8 mx-auto'
-                                }, React.createElement('div', {
-                                    className: 'alert alert-info'
-                                }, [
-                                    React.createElement('strong', { key: 'info-title' }, '💡 Supported Format:'),
-                                    React.createElement('ul', {
-                                        key: 'info-list',
-                                        className: 'mb-0 mt-2 text-start'
-                                    }, [
-                                        React.createElement('li', { key: 'info-1' }, 'JSON files with arrays or objects containing message data'),
-                                        React.createElement('li', { key: 'info-2' }, 'Required fields: user_name, message_type, status, sent_at'),
-                                        React.createElement('li', { key: 'info-3' }, 'Supports nested structures with "messages" or "data" properties')
-                                    ])
-                                ])))
-                            ]),
-                            React.createElement('input', {
-                                key: 'file-input',
-                                ref: fileInputRef,
-                                type: 'file',
-                                accept: '.json',
-                                className: 'd-none',
-                                onChange: (e) => e.target.files[0] && handleFileUpload(e.target.files[0])
-                            })
-                        ]),
-
-                        // Endpoint Tab
-                        activeTab === 'endpoint' && React.createElement('div', {
-                            key: 'endpoint-content',
-                            className: 'tab-pane fade show active'
-                        }, React.createElement('div', {
-                            className: 'row justify-content-center'
-                        }, React.createElement('div', {
-                            className: 'col-lg-8'
-                        }, [
-                            React.createElement('h4', {
-                                key: 'endpoint-title',
-                                className: 'text-center mb-4'
-                            }, '🌐 Fetch Data from API Endpoint'),
-                            React.createElement('div', {
-                                key: 'endpoint-input',
-                                className: 'mb-4'
-                            }, React.createElement('div', {
-                                className: 'input-group input-group-lg'
-                            }, [
-                                React.createElement('span', {
-                                    key: 'url-icon',
-                                    className: 'input-group-text'
-                                }, '🔗'),
-                                React.createElement('input', {
-                                    key: 'url-input',
-                                    type: 'url',
-                                    className: 'form-control',
-                                    placeholder: 'https://api.example.com/task-responses',
-                                    value: endpoint,
-                                    onChange: (e) => setEndpoint(e.target.value),
-                                    onKeyPress: (e) => e.key === 'Enter' && handleGetRequest(),
-                                    disabled: isLoading
-                                }),
-                                React.createElement('button', {
-                                    key: 'fetch-btn',
-                                    className: 'btn btn-gradient',
-                                    onClick: handleGetRequest,
-                                    disabled: isLoading || !endpoint.trim()
-                                }, isLoading ? [
-                                    React.createElement('span', {
-                                        key: 'loading-spinner',
-                                        className: 'spinner-border spinner-border-sm me-2'
-                                    }),
-                                    'Fetching...'
-                                ] : ['⬇️ Fetch Data'])
-                            ]))
-                        ]))),
-
-                        // Sample Data Tab
-                        activeTab === 'sample' && React.createElement('div', {
-                            key: 'sample-content',
-                            className: 'tab-pane fade show active'
-                        }, React.createElement('div', {
-                            className: 'text-center'
-                        }, [
-                            React.createElement('div', {
-                                key: 'sample-icon',
-                                style: { fontSize: '4rem' }
-                            }, '🧪'),
-                            React.createElement('h4', {
-                                key: 'sample-title',
-                                className: 'mb-3'
-                            }, 'Try Sample Data'),
-                            React.createElement('p', {
-                                key: 'sample-desc',
-                                className: 'text-muted mb-4'
-                            }, 'Load 50 sample records to explore the dashboard features'),
-                            React.createElement('button', {
-                                key: 'sample-btn',
-                                className: 'btn btn-gradient btn-lg',
-                                onClick: loadSampleData
-                            }, '🚀 Load Sample Data')
-                        ]))
-                    ])
-                ]),
-
-                // Dashboard Content
-                data.length > 0 && React.createElement('div', {
-                    key: 'dashboard'
-                }, [
-                    // Filters Section
-                    React.createElement('div', {
-                        key: 'filters',
-                        className: 'glass-card p-4 mb-4'
-                    }, React.createElement('div', {
-                        className: 'row g-3 align-items-end'
-                    }, [
-                        React.createElement('div', {
-                            key: 'filter-type',
-                            className: 'col-md-3'
-                        }, [
-                            React.createElement('label', {
-                                key: 'type-label',
-                                className: 'form-label fw-semibold'
-                            }, '🏷️ Message Type'),
-                            React.createElement('select', {
-                                key: 'type-select',
-                                className: 'form-select',
-                                value: filters.messageType,
-                                onChange: (e) => setFilters(prev => ({ ...prev, messageType: e.target.value }))
-                            }, [
-                                React.createElement('option', { key: 'all-types', value: 'all' }, 'All Types'),
-                                ...stats.messageTypes.map(type => 
-                                    React.createElement('option', { key: type, value: type }, 
-                                        type ? type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Unknown Type'
-                                    )
-                                )
-                            ])
-                        ]),
-                        React.createElement('div', {
-                            key: 'filter-status',
-                            className: 'col-md-3'
-                        }, [
-                            React.createElement('label', {
-                                key: 'status-label',
-                                className: 'form-label fw-semibold'
-                            }, '✅ Status'),
-                            React.createElement('select', {
-                                key: 'status-select',
-                                className: 'form-select',
-                                value: filters.status,
-                                onChange: (e) => setFilters(prev => ({ ...prev, status: e.target.value }))
-                            }, [
-                                React.createElement('option', { key: 'all-status', value: 'all' }, 'All Statuses'),
-                                React.createElement('option', { key: 'ack', value: 'acknowledged' }, 'Acknowledged'),
-                                React.createElement('option', { key: 'sent', value: 'sent' }, 'Sent'),
-                                React.createElement('option', { key: 'cannot', value: 'cannot_comply' }, 'Cannot Comply'),
-                                React.createElement('option', { key: 'issue', value: 'issue_reported' }, 'Issue Reported')
-                            ])
-                        ]),
-                        React.createElement('div', {
-                            key: 'filter-user',
-                            className: 'col-md-3'
-                        }, [
-                            React.createElement('label', {
-                                key: 'user-label',
-                                className: 'form-label fw-semibold'
-                            }, '🔍 Search User'),
-                            React.createElement('input', {
-                                key: 'user-input',
-                                type: 'text',
-                                className: 'form-control',
-                                placeholder: 'Enter user name...',
-                                value: filters.searchUser,
-                                onChange: (e) => setFilters(prev => ({ ...prev, searchUser: e.target.value }))
-                            })
-                        ]),
-                        React.createElement('div', {
-                            key: 'filter-actions',
-                            className: 'col-md-3'
-                        }, React.createElement('div', {
-                            className: 'd-grid gap-2'
-                        }, React.createElement('button', {
-                            className: 'btn btn-info-gradient',
-                            onClick: () => setActiveTab('upload')
-                        }, '📂 Load New Data')))
-                    ])),
-
-                    // Key Metrics Cards
-                    React.createElement('div', {
-                        key: 'metrics',
-                        className: 'row g-4 mb-4'
-                    }, [
-                        React.createElement('div', {
-                            key: 'metric-total',
-                            className: 'col-lg-3 col-md-6'
-                        }, React.createElement('div', {
-                            className: 'card metric-card text-white h-100'
-                        }, React.createElement('div', {
-                            className: 'card-body'
-                        }, React.createElement('div', {
-                            className: 'd-flex justify-content-between align-items-start'
-                        }, [
-                            React.createElement('div', { key: 'total-content' }, [
-                                React.createElement('h6', {
-                                    key: 'total-title',
-                                    className: 'card-title opacity-75'
-                                }, 'Total Messages'),
-                                React.createElement('h2', {
-                                    key: 'total-value',
-                                    className: 'card-text fw-bold'
-                                }, stats.total.toLocaleString()),
-                                React.createElement('small', {
-                                    key: 'total-subtitle',
-                                    className: 'opacity-75'
-                                }, `${stats.messageTypes.length} message types`)
-                            ]),
-                            React.createElement('div', {
-                                key: 'total-icon',
-                                style: { fontSize: '3rem', opacity: 0.5 }
-                            }, '📊')
-                        ])))),
-
-                        React.createElement('div', {
-                            key: 'metric-response',
-                            className: 'col-lg-3 col-md-6'
-                        }, React.createElement('div', {
-                            className: 'card metric-card success text-white h-100'
-                        }, React.createElement('div', {
-                            className: 'card-body'
-                        }, React.createElement('div', {
-                            className: 'd-flex justify-content-between align-items-start'
-                        }, [
-                            React.createElement('div', { key: 'response-content' }, [
-                                React.createElement('h6', {
-                                    key: 'response-title',
-                                    className: 'card-title opacity-75'
-                                }, 'Response Rate'),
-                                React.createElement('h2', {
-                                    key: 'response-value',
-                                    className: 'card-text fw-bold'
-                                }, `${((stats.acknowledged / stats.total) * 100).toFixed(1)}%`),
-                                React.createElement('small', {
-                                    key: 'response-subtitle',
-                                    className: 'opacity-75'
-                                }, `${stats.acknowledged.toLocaleString()} acknowledged`)
-                            ]),
-                            React.createElement('div', {
-                                key: 'response-icon',
-                                style: { fontSize: '3rem', opacity: 0.5 }
-                            }, '✅')
-                        ])))),
-
-                        React.createElement('div', {
-                            key: 'metric-best',
-                            className: 'col-lg-3 col-md-6'
-                        }, React.createElement('div', {
-                            className: 'card metric-card info text-white h-100'
-                        }, React.createElement('div', {
-                            className: 'card-body'
-                        }, React.createElement('div', {
-                            className: 'd-flex justify-content-between align-items-start'
-                        }, [
-                            React.createElement('div', { key: 'best-content' }, [
-                                React.createElement('h6', {
-                                    key: 'best-title',
-                                    className: 'card-title opacity-75'
-                                }, 'Best Performer'),
-                                React.createElement('h6', {
-                                    key: 'best-value',
-                                    className: 'card-text fw-bold'
-                                }, messageTypeStats.length > 0 ? 
-                                    messageTypeStats.reduce((best, current) => 
-                                        parseFloat(current.responseRate) > parseFloat(best.responseRate) ? current : best
-                                    ).type?.replace(/_/g, ' ') || 'Unknown' : 'N/A'),
-                                React.createElement('small', {
-                                    key: 'best-subtitle',
-                                    className: 'opacity-75'
-                                }, messageTypeStats.length > 0 ? 
-                                    messageTypeStats.reduce((best, current) => 
-                                        parseFloat(current.responseRate) > parseFloat(best.responseRate) ? current : best
-                                    ).responseRate + '% rate' : 'No data')
-                            ]),
-                            React.createElement('div', {
-                                key: 'best-icon',
-                                style: { fontSize: '3rem', opacity: 0.5 }
-                            }, '🏆')
-                        ])))),
-
-                        React.createElement('div', {
-                            key: 'metric-issues',
-                            className: 'col-lg-3 col-md-6'
-                        }, React.createElement('div', {
-                            className: 'card metric-card warning text-white h-100'
-                        }, React.createElement('div', {
-                            className: 'card-body'
-                        }, React.createElement('div', {
-                            className: 'd-flex justify-content-between align-items-start'
-                        }, [
-                            React.createElement('div', { key: 'issues-content' }, [
-                                React.createElement('h6', {
-                                    key: 'issues-title',
-                                    className: 'card-title opacity-75'
-                                }, 'Issues Found'),
-                                React.createElement('h2', {
-                                    key: 'issues-value',
-                                    className: 'card-text fw-bold'
-                                }, stats.cannotComply + stats.issueReported),
-                                React.createElement('small', {
-                                    key: 'issues-subtitle',
-                                    className: 'opacity-75'
-                                }, 'Require attention')
-                            ]),
-                            React.createElement('div', {
-                                key: 'issues-icon',
-                                style: { fontSize: '3rem', opacity: 0.5 }
-                            }, '⚠️')
-                        ]))))
-                    ]),
-
-                    // Charts Section
-                    React.createElement('div', {
-                        key: 'charts',
-                        className: 'row g-4 mb-4'
-                    }, [
-                        React.createElement('div', {
-                            key: 'status-chart',
-                            className: 'col-lg-6'
-                        }, React.createElement('div', {
-                            className: 'glass-card h-100'
-                        }, [
-                            React.createElement('div', {
-                                key: 'status-header',
-                                className: 'card-header bg-transparent border-0 pt-4'
-                            }, React.createElement('h5', {
-                                className: 'card-title mb-0'
-                            }, '🥧 Status Distribution')),
-                            React.createElement('div', {
-                                key: 'status-body',
-                                className: 'card-body'
-                            }, React.createElement('div', {
-                                className: 'chart-container'
-                            }, React.createElement('canvas', { ref: statusChartRef })))
-                        ])),
-
-                        React.createElement('div', {
-                            key: 'response-chart',
-                            className: 'col-lg-6'
-                        }, React.createElement('div', {
-                            className: 'glass-card h-100'
-                        }, [
-                            React.createElement('div', {
-                                key: 'response-header',
-                                className: 'card-header bg-transparent border-0 pt-4'
-                            }, React.createElement('h5', {
-                                className: 'card-title mb-0'
-                            }, '📊 Response Rates by Type')),
-                            React.createElement('div', {
-                                key: 'response-body',
-                                className: 'card-body'
-                            }, [
-                                React.createElement('div', {
-                                    key: 'response-canvas',
-                                    className: 'chart-container'
-                                }, React.createElement('canvas', { ref: chartRef })),
-                                messageTypeStats.length > 0 && React.createElement('div', {
-                                    key: 'response-stats',
-                                    className: 'row g-2 mt-2'
-                                }, messageTypeStats.map((stat, index) => 
-                                    React.createElement('div', {
-                                        key: stat.type || index,
-                                        className: 'col-md-6'
-                                    }, React.createElement('div', {
-                                        className: 'alert alert-light mb-2 py-2'
-                                    }, [
-                                        React.createElement('div', {
-                                            key: 'stat-header',
-                                            className: 'd-flex justify-content-between'
-                                        }, [
-                                            React.createElement('small', {
-                                                key: 'stat-name',
-                                                className: 'fw-semibold'
-                                            }, stat.type ? stat.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Unknown'),
-                                            React.createElement('small', {
-                                                key: 'stat-rate',
-                                                className: 'text-primary fw-bold'
-                                            }, `${stat.responseRate}%`)
-                                        ]),
-                                        React.createElement('small', {
-                                            key: 'stat-total',
-                                            className: 'text-muted'
-                                        }, `${stat.total} total messages`)
-                                    ]))
-                                ))
-                            ])
-                        ]))
-                    ]),
-
-                    // Insights Section
-                    React.createElement('div', {
-                        key: 'insights',
-                        className: 'glass-card mb-4'
-                    }, [
-                        React.createElement('div', {
-                            key: 'insights-header',
-                            className: 'card-header bg-transparent border-0 pt-4'
-                        }, React.createElement('button', {
-                            className: 'btn btn-link text-decoration-none p-0 w-100 text-start',
-                            type: 'button',
-                            onClick: () => setShowInsights(!showInsights)
-                        }, React.createElement('h5', {
-                            className: 'card-title mb-0'
-                        }, [
-                            '💡 Key Insights & Analytics ',
-                            React.createElement('span', {
-                                key: 'insights-toggle',
-                                className: 'float-end'
-                            }, showInsights ? '🔽' : '▶️')
-                        ]))),
-                        showInsights && React.createElement('div', {
-                            key: 'insights-body',
-                            className: 'card-body'
-                        }, [
-                            React.createElement('div', {
-                                key: 'insights-grid',
-                                className: 'row g-3'
-                            }, [
-                                React.createElement('div', {
-                                    key: 'insight-1',
-                                    className: 'col-md-6'
-                                }, React.createElement('div', {
-                                    className: 'alert alert-primary insight-card primary'
-                                }, [
-                                    React.createElement('h6', {
-                                        key: 'insight-1-title',
-                                        className: 'alert-heading'
-                                    }, '📈 Message Analysis'),
-                                    React.createElement('p', {
-                                        key: 'insight-1-text',
-                                        className: 'mb-1'
-                                    }, [
-                                        React.createElement('strong', { key: 'types' }, stats.messageTypes.length),
-                                        ' different message types across ',
-                                        React.createElement('strong', { key: 'total' }, stats.total),
-                                        ' messages.'
-                                    ])
-                                ])),
-
-                                React.createElement('div', {
-                                    key: 'insight-2',
-                                    className: 'col-md-6'
-                                }, React.createElement('div', {
-                                    className: 'alert alert-success insight-card success'
-                                }, [
-                                    React.createElement('h6', {
-                                        key: 'insight-2-title',
-                                        className: 'alert-heading'
-                                    }, '✅ Engagement Score'),
-                                    React.createElement('p', {
-                                        key: 'insight-2-text',
-                                        className: 'mb-1'
-                                    }, [
-                                        React.createElement('strong', { key: 'rate' }, `${((stats.acknowledged / stats.total) * 100).toFixed(1)}%`),
-                                        ' overall acknowledgment rate'
-                                    ]),
-                                    React.createElement('small', {
-                                        key: 'insight-2-sub'
-                                    }, ((stats.acknowledged / stats.total) * 100) >= 70 ? 'Excellent' : 
-                                         ((stats.acknowledged / stats.total) * 100) >= 50 ? 'Good' : 'Needs Improvement' + ' team responsiveness')
-                                ])),
-
-                                React.createElement('div', {
-                                    key: 'insight-3',
-                                    className: 'col-md-6'
-                                }, React.createElement('div', {
-                                    className: 'alert alert-warning insight-card warning'
-                                }, [
-                                    React.createElement('h6', {
-                                        key: 'insight-3-title',
-                                        className: 'alert-heading'
-                                    }, '⚠️ Unacknowledged Messages'),
-                                    React.createElement('p', {
-                                        key: 'insight-3-text',
-                                        className: 'mb-1'
-                                    }, [
-                                        React.createElement('strong', { key: 'sent-count' }, stats.sent),
-                                        ` messages (${((stats.sent / stats.total) * 100).toFixed(1)}%) remain unacknowledged`
-                                    ]),
-                                    React.createElement('small', {
-                                        key: 'insight-3-sub'
-                                    }, 'Potential communication gap')
-                                ])),
-
-                                React.createElement('div', {
-                                    key: 'insight-4',
-                                    className: 'col-md-6'
-                                }, React.createElement('div', {
-                                    className: 'alert alert-danger insight-card danger'
-                                }, [
-                                    React.createElement('h6', {
-                                        key: 'insight-4-title',
-                                        className: 'alert-heading'
-                                    }, '🛡️ Compliance Issues'),
-                                    React.createElement('p', {
-                                        key: 'insight-4-text',
-                                        className: 'mb-1'
-                                    }, [
-                                        React.createElement('strong', { key: 'cannot' }, stats.cannotComply),
-                                        ' cannot comply, ',
-                                        React.createElement('strong', { key: 'issues' }, stats.issueReported),
-                                        ' issues reported'
-                                    ]),
-                                    React.createElement('small', {
-                                        key: 'insight-4-sub'
-                                    }, 'Require immediate attention')
-                                ]))
-                            ]),
-                            React.createElement('div', {
-                                key: 'insights-actions',
-                                className: 'row g-2 mt-3'
-                            }, [
-                                React.createElement('div', {
-                                    key: 'action-1',
-                                    className: 'col-auto'
-                                }, React.createElement('button', {
-                                    className: `btn ${highlightIssues ? 'btn-outline-danger' : 'btn-danger'}`,
-                                    onClick: () => setHighlightIssues(!highlightIssues)
-                                }, [
-                                    '👁️ ',
-                                    highlightIssues ? 'Hide' : 'Highlight',
-                                    ' Issues'
-                                ])),
-                                React.createElement('div', {
-                                    key: 'action-2',
-                                    className: 'col-auto'
-                                }, React.createElement('button', {
-                                    className: 'btn btn-success-gradient',
-                                    onClick: exportCSV
-                                }, '📥 Export Data'))
-                            ])
-                        ])
-                    ]),
-
-                    // Data Table
-                    React.createElement('div', {
-                        key: 'table',
-                        className: 'glass-card'
-                    }, [
-                        React.createElement('div', {
-                            key: 'table-header',
-                            className: 'card-header bg-transparent border-0 pt-4'
-                        }, React.createElement('div', {
-                            className: 'd-flex justify-content-between align-items-center'
-                        }, [
-                            React.createElement('h5', {
-                                key: 'table-title',
-                                className: 'card-title mb-0'
-                            }, `📋 Message Details (${filteredData.length.toLocaleString()} records)`),
-                            React.createElement('div', {
-                                key: 'page-badge',
-                                className: 'badge bg-primary fs-6'
-                            }, `Page ${currentPage} of ${totalPages}`)
-                        ])),
-                        React.createElement('div', {
-                            key: 'table-body',
-                            className: 'card-body p-0'
-                        }, [
-                            React.createElement('div', {
-                                key: 'table-responsive',
-                                className: 'table-responsive'
-                            }, React.createElement('table', {
-                                className: 'table table-hover mb-0'
-                            }, [
-                                React.createElement('thead', {
-                                    key: 'table-head',
-                                    className: 'table-light'
-                                }, React.createElement('tr', {}, [
-                                    React.createElement('th', {
-                                        key: 'th-user',
-                                        className: 'border-0 cursor-pointer',
-                                        onClick: () => handleSort('user_name')
-                                    }, React.createElement('div', {
-                                        className: 'd-flex align-items-center'
-                                    }, ['User Name ', getSortIcon('user_name')])),
-                                    React.createElement('th', {
-                                        key: 'th-type',
-                                        className: 'border-0 cursor-pointer',
-                                        onClick: () => handleSort('message_type')
-                                    }, React.createElement('div', {
-                                        className: 'd-flex align-items-center'
-                                    }, ['Message Type ', getSortIcon('message_type')])),
-                                    React.createElement('th', {
-                                        key: 'th-status',
-                                        className: 'border-0 cursor-pointer',
-                                        onClick: () => handleSort('status')
-                                    }, React.createElement('div', {
-                                        className: 'd-flex align-items-center'
-                                    }, ['Status ', getSortIcon('status')])),
-                                    React.createElement('th', {
-                                        key: 'th-sent',
-                                        className: 'border-0 cursor-pointer',
-                                        onClick: () => handleSort('sent_at')
-                                    }, React.createElement('div', {
-                                        className: 'd-flex align-items-center'
-                                    }, ['Sent Time ', getSortIcon('sent_at')])),
-                                    React.createElement('th', {
-                                        key: 'th-ack',
-                                        className: 'border-0'
-                                    }, 'Acknowledged Time'),
-                                    React.createElement('th', {
-                                        key: 'th-content',
-                                        className: 'border-0'
-                                    }, 'Message Content')
-                                ])),
-                                React.createElement('tbody', {
-                                    key: 'table-body'
-                                }, paginatedData.map((row, index) => 
-                                    React.createElement('tr', {
-                                        key: row.id || index,
-                                        className: `
-                                            ${highlightIssues && row.status === 'cannot_comply' ? 'highlight-cannot-comply' : ''}
-                                            ${highlightIssues && row.status === 'issue_reported' ? 'highlight-issue-reported' : ''}
-                                        `.trim()
-                                    }, [
-                                        React.createElement('td', {
-                                            key: 'td-user'
-                                        }, row.user_name ? 
-                                            React.createElement('div', {
-                                                className: 'fw-semibold'
-                                            }, row.user_name) :
-                                            React.createElement('span', {
-                                                className: 'badge bg-danger'
-                                            }, '⚠️ Missing Data')
-                                        ),
-                                        React.createElement('td', {
-                                            key: 'td-type'
-                                        }, React.createElement('span', {
-                                            className: `badge ${
-                                                row.message_type?.includes('morning') ? 'bg-info' : 
-                                                row.message_type?.includes('evening') ? 'bg-purple text-white' :
-                                                row.message_type?.includes('mid') ? 'bg-success' : 'bg-secondary'
-                                            }`
-                                        }, row.message_type ? row.message_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Unknown')),
-                                        React.createElement('td', {
-                                            key: 'td-status'
-                                        }, getStatusBadge(row.status)),
-                                        React.createElement('td', {
-                                            key: 'td-sent'
-                                        }, React.createElement('small', {
-                                            className: 'font-monospace text-muted'
-                                        }, formatDateTime(row.sent_at))),
-                                        React.createElement('td', {
-                                            key: 'td-ack'
-                                        }, row.acknowledged_at ? 
-                                            React.createElement('small', {
-                                                className: 'font-monospace text-success'
-                                            }, formatDateTime(row.acknowledged_at)) :
-                                            React.createElement('span', {
-                                                className: 'text-muted fst-italic'
-                                            }, 'Not acknowledged')
-                                        ),
-                                        React.createElement('td', {
-                                            key: 'td-content'
-                                        }, React.createElement('div', {
-                                            className: 'text-truncate',
-                                            style: { maxWidth: '200px' },
-                                            title: row.message_content
-                                        }, row.message_content || React.createElement('span', {
-                                            className: 'text-muted fst-italic'
-                                        }, 'No content')))
-                                    ])
-                                ))
-                            ])),
-                            
-                            // Pagination
-                            React.createElement('div', {
-                                key: 'pagination',
-                                className: 'card-footer bg-transparent border-0'
-                            }, React.createElement('div', {
-                                className: 'd-flex justify-content-between align-items-center'
-                            }, [
-                                React.createElement('div', {
-                                    key: 'pagination-info',
-                                    className: 'text-muted'
-                                }, `Showing ${((currentPage - 1) * itemsPerPage) + 1} to ${Math.min(currentPage * itemsPerPage, sortedData.length)} of ${sortedData.length} results`),
-                                React.createElement('nav', {
-                                    key: 'pagination-nav'
-                                }, React.createElement('ul', {
-                                    className: 'pagination pagination-sm mb-0'
-                                }, [
-                                    React.createElement('li', {
-                                        key: 'page-prev',
-                                        className: `page-item ${currentPage === 1 ? 'disabled' : ''}`
-                                    }, React.createElement('button', {
-                                        className: 'page-link',
-                                        onClick: () => setCurrentPage(currentPage - 1),
-                                        disabled: currentPage === 1
-                                    }, '◀')),
-                                    ...getPaginationItems().map(pageNum =>
-                                        React.createElement('li', {
-                                            key: `page-${pageNum}`,
-                                            className: `page-item ${currentPage === pageNum ? 'active' : ''}`
-                                        }, React.createElement('button', {
-                                            className: 'page-link',
-                                            onClick: () => setCurrentPage(pageNum)
-                                        }, pageNum))
-                                    ),
-                                    React.createElement('li', {
-                                        key: 'page-next',
-                                        className: `page-item ${currentPage === totalPages ? 'disabled' : ''}`
-                                    }, React.createElement('button', {
-                                        className: 'page-link',
-                                        onClick: () => setCurrentPage(currentPage + 1),
-                                        disabled: currentPage === totalPages
-                                    }, '▶'))
-                                ]))
-                            ]))
-                        ])
-                    ]),
-
-                    // Footer
-                    React.createElement('div', {
-                        key: 'footer',
-                        className: 'text-center mt-4 p-3 glass-card'
-                    }, React.createElement('p', {
-                        className: 'text-muted mb-0'
-                    }, [
-                        '⚙️ Dashboard powered by React, Bootstrap & Chart.js • Last updated: ',
-                        new Date().toLocaleString()
-                    ]))
-                ])
-            ]);
+                // Update response stats
+                const responseStatsContainer = document.getElementById('response-stats');
+                responseStatsContainer.innerHTML = messageTypeStats.map(stat => `
+                    <div class="col-md-6">
+                        <div class="alert alert-light mb-2 py-2">
+                            <div class="d-flex justify-content-between">
+                                <small class="fw-semibold">${stat.type ? stat.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Unknown'}</small>
+                                <small class="text-primary fw-bold">${stat.responseRate}%</small>
+                            </div>
+                            <small class="text-muted">${stat.total} total messages</small>
+                        </div>
+                    </div>
+                `).join('');
+            }
         };
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(React.createElement(Dashboard));
+        const renderInsights = () => {
+            const stats = calculateStats(state.data);
+            const container = document.getElementById('insights-grid');
+            
+            const responseRate = (stats.acknowledged / stats.total) * 100;
+            const engagementLevel = responseRate >= 70 ? 'Excellent' : responseRate >= 50 ? 'Good' : 'Needs Improvement';
+            
+            container.innerHTML = `
+                <div class="col-md-6">
+                    <div class="alert alert-primary insight-card primary">
+                        <h6 class="alert-heading">📈 Message Analysis</h6>
+                        <p class="mb-1">
+                            <strong>${stats.messageTypes.length}</strong> different message types across 
+                            <strong>${stats.total}</strong> messages.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="alert alert-success insight-card success">
+                        <h6 class="alert-heading">✅ Engagement Score</h6>
+                        <p class="mb-1">
+                            <strong>${responseRate.toFixed(1)}%</strong> overall acknowledgment rate
+                        </p>
+                        <small>${engagementLevel} team responsiveness</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="alert alert-warning insight-card warning">
+                        <h6 class="alert-heading">⚠️ Unacknowledged Messages</h6>
+                        <p class="mb-1">
+                            <strong>${stats.sent}</strong> messages (${((stats.sent / stats.total) * 100).toFixed(1)}%) remain unacknowledged
+                        </p>
+                        <small>Potential communication gap</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="alert alert-danger insight-card danger">
+                        <h6 class="alert-heading">🛡️ Compliance Issues</h6>
+                        <p class="mb-1">
+                            <strong>${stats.cannotComply}</strong> cannot comply, 
+                            <strong>${stats.issueReported}</strong> issues reported
+                        </p>
+                        <small>Require immediate attention</small>
+                    </div>
+                </div>
+            `;
+        };
+
+        const applyFilters = () => {
+            let filtered = state.data;
+
+            if (state.filters.messageType !== 'all') {
+                filtered = filtered.filter(d => d.message_type === state.filters.messageType);
+            }
+
+            if (state.filters.status !== 'all') {
+                filtered = filtered.filter(d => d.status === state.filters.status);
+            }
+
+            if (state.filters.searchUser) {
+                filtered = filtered.filter(d => 
+                    d.user_name && d.user_name.toLowerCase().includes(state.filters.searchUser.toLowerCase())
+                );
+            }
+
+            state.filteredData = filtered;
+            state.currentPage = 1;
+            renderTable();
+        };
+
+        const applySorting = () => {
+            if (!state.sortConfig.key) return;
+            
+            state.filteredData.sort((a, b) => {
+                const aValue = a[state.sortConfig.key];
+                const bValue = b[state.sortConfig.key];
+                
+                if (aValue < bValue) return state.sortConfig.direction === 'asc' ? -1 : 1;
+                if (aValue > bValue) return state.sortConfig.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            renderTable();
+        };
+
+        const renderTable = () => {
+            const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+            const endIndex = Math.min(startIndex + state.itemsPerPage, state.filteredData.length);
+            const paginatedData = state.filteredData.slice(startIndex, endIndex);
+            
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = paginatedData.map((row, index) => `
+                <tr class="${state.highlightIssues && row.status === 'cannot_comply' ? 'highlight-cannot-comply' : ''}
+                           ${state.highlightIssues && row.status === 'issue_reported' ? 'highlight-issue-reported' : ''}">
+                    <td>
+                        ${row.user_name ? 
+                            `<div class="fw-semibold">${row.user_name}</div>` :
+                            '<span class="badge bg-danger">⚠️ Missing Data</span>'
+                        }
+                    </td>
+                    <td>
+                        <span class="badge badge-modern ${
+                            row.message_type?.includes('morning') ? 'bg-info' : 
+                            row.message_type?.includes('evening') ? 'bg-purple text-white' :
+                            row.message_type?.includes('mid') ? 'bg-success' : 'bg-secondary'
+                        }">
+                            ${row.message_type ? row.message_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Unknown'}
+                        </span>
+                    </td>
+                    <td>${getStatusBadge(row.status)}</td>
+                    <td><small class="font-monospace text-muted">${formatDateTime(row.sent_at)}</small></td>
+                    <td>
+                        ${row.acknowledged_at ? 
+                            `<small class="font-monospace text-success">${formatDateTime(row.acknowledged_at)}</small>` :
+                            '<span class="text-muted fst-italic">Not acknowledged</span>'
+                        }
+                    </td>
+                    <td>
+                        <div class="text-truncate" style="max-width: 200px;" title="${row.message_content || ''}">
+                            ${row.message_content || '<span class="text-muted fst-italic">No content</span>'}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // Update table title and pagination
+            document.getElementById('table-title').textContent = `📋 Message Details (${state.filteredData.length.toLocaleString()} records)`;
+            
+            const totalPages = Math.ceil(state.filteredData.length / state.itemsPerPage);
+            document.getElementById('page-badge').textContent = `Page ${state.currentPage} of ${totalPages}`;
+            document.getElementById('pagination-info').textContent = 
+                `Showing ${startIndex + 1} to ${endIndex} of ${state.filteredData.length} results`;
+            
+            renderPagination(totalPages);
+        };
+
+        const renderPagination = (totalPages) => {
+            const pagination = document.getElementById('pagination');
+            const maxVisible = 5;
+            let start = Math.max(1, state.currentPage - Math.floor(maxVisible / 2));
+            let end = Math.min(totalPages, start + maxVisible - 1);
+            
+            if (end - start + 1 < maxVisible) {
+                start = Math.max(1, end - maxVisible + 1);
+            }
+
+            let paginationHtml = `
+                <li class="page-item ${state.currentPage === 1 ? 'disabled' : ''}">
+                    <button class="page-link" onclick="changePage(${state.currentPage - 1})" ${state.currentPage === 1 ? 'disabled' : ''}>◀</button>
+                </li>
+            `;
+            
+            for (let i = start; i <= end; i++) {
+                paginationHtml += `
+                    <li class="page-item ${state.currentPage === i ? 'active' : ''}">
+                        <button class="page-link" onclick="changePage(${i})">${i}</button>
+                    </li>
+                `;
+            }
+            
+            paginationHtml += `
+                <li class="page-item ${state.currentPage === totalPages ? 'disabled' : ''}">
+                    <button class="page-link" onclick="changePage(${state.currentPage + 1})" ${state.currentPage === totalPages ? 'disabled' : ''}>▶</button>
+                </li>
+            `;
+            
+            pagination.innerHTML = paginationHtml;
+        };
+
+        const exportCSV = () => {
+            const csvContent = [
+                ['User Name', 'Message Type', 'Status', 'Sent Time', 'Acknowledged Time', 'Message Content'].join(','),
+                ...state.filteredData.map(row => [
+                    row.user_name || 'N/A',
+                    row.message_type || 'Unknown',
+                    row.status,
+                    formatDateTime(row.sent_at),
+                    formatDateTime(row.acknowledged_at),
+                    (row.message_content || '').replace(/"/g, '""')
+                ].map(field => `"${field}"`).join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `task_response_data_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        };
+
+        // Global functions for event handlers
+        window.changePage = (page) => {
+            const totalPages = Math.ceil(state.filteredData.length / state.itemsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                state.currentPage = page;
+                renderTable();
+            }
+        };
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set current date
+            document.getElementById('current-date').textContent = new Date().toLocaleDateString();
+            
+            // Tab switching
+            document.querySelectorAll('[data-tab]').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const targetTab = e.target.dataset.tab;
+                    
+                    // Update tab buttons
+                    document.querySelectorAll('[data-tab]').forEach(t => t.classList.remove('active'));
+                    e.target.classList.add('active');
+                    
+                    // Show/hide tab content
+                    document.querySelectorAll('.tab-pane').forEach(pane => {
+                        pane.classList.add('d-none');
+                    });
+                    document.getElementById(`${targetTab}-content`).classList.remove('d-none');
+                });
+            });
+            
+            // File upload
+            const uploadZone = document.getElementById('upload-zone');
+            const fileInput = document.getElementById('file-input');
+            
+            uploadZone.addEventListener('click', () => fileInput.click());
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('dragover');
+            });
+            uploadZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+            });
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type === 'application/json') {
+                    handleFileUpload(files[0]);
+                }
+            });
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    handleFileUpload(e.target.files[0]);
+                }
+            });
+            
+            // Endpoint fetch
+            document.getElementById('fetch-btn').addEventListener('click', handleEndpointFetch);
+            document.getElementById('endpoint-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleEndpointFetch();
+            });
+            
+            // Sample data
+            document.getElementById('sample-btn').addEventListener('click', loadSampleData);
+            
+            // Filters
+            document.getElementById('filter-type').addEventListener('change', (e) => {
+                state.filters.messageType = e.target.value;
+                applyFilters();
+            });
+            
+            document.getElementById('filter-status').addEventListener('change', (e) => {
+                state.filters.status = e.target.value;
+                applyFilters();
+            });
+            
+            document.getElementById('filter-user').addEventListener('input', (e) => {
+                state.filters.searchUser = e.target.value;
+                applyFilters();
+            });
+            
+            // New data button
+            document.getElementById('new-data-btn').addEventListener('click', () => {
+                document.getElementById('data-source-section').style.display = 'block';
+                document.getElementById('dashboard-content').classList.add('d-none');
+            });
+            
+            // Sorting
+            document.querySelectorAll('[data-sort]').forEach(header => {
+                header.addEventListener('click', (e) => {
+                    const key = e.currentTarget.dataset.sort;
+                    let direction = 'asc';
+                    
+                    if (state.sortConfig.key === key && state.sortConfig.direction === 'asc') {
+                        direction = 'desc';
+                    }
+                    
+                    state.sortConfig = { key, direction };
+                    
+                    // Update sort icons
+                    document.querySelectorAll('.sort-icon').forEach(icon => {
+                        icon.textContent = '↕️';
+                    });
+                    e.currentTarget.querySelector('.sort-icon').textContent = direction === 'asc' ? '↑' : '↓';
+                    
+                    applySorting();
+                });
+            });
+            
+            // Insights toggle
+            document.getElementById('insights-toggle').addEventListener('click', () => {
+                const body = document.getElementById('insights-body');
+                const icon = document.querySelector('#insights-toggle span');
+                
+                if (body.style.display === 'none') {
+                    body.style.display = 'block';
+                    icon.textContent = '🔽';
+                    state.showInsights = true;
+                } else {
+                    body.style.display = 'none';
+                    icon.textContent = '▶️';
+                    state.showInsights = false;
+                }
+            });
+            
+            // Highlight issues
+            document.getElementById('highlight-btn').addEventListener('click', (e) => {
+                state.highlightIssues = !state.highlightIssues;
+                e.target.textContent = state.highlightIssues ? '👁️ Hide Issues' : '👁️ Highlight Issues';
+                e.target.className = state.highlightIssues ? 'btn btn-outline-danger' : 'btn btn-outline-danger';
+                renderTable();
+            });
+            
+            // Export
+            document.getElementById('export-btn').addEventListener('click', exportCSV);
+        });
+    </script>
+</body>
+</html>
