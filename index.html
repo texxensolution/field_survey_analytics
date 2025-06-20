@@ -314,12 +314,17 @@
 
             <div class="tab-content">
                 <!-- Upload Tab -->
-                <div id="upload-content" class="tab-pane">
+                <div id="upload-content" class="tab-pane show active">
                     <div class="upload-zone p-5 text-center" id="upload-zone">
                         <div id="upload-default">
                             <div style="font-size: 4rem;">📤</div>
                             <h4 class="mb-3">Drag & Drop JSON File</h4>
                             <p class="text-muted mb-4">Or click here to browse files</p>
+                            <div class="mb-4">
+                                <button type="button" class="btn btn-modern btn-lg" onclick="document.getElementById('file-input').click()">
+                                    📁 Choose File
+                                </button>
+                            </div>
                             <div class="row">
                                 <div class="col-md-8 mx-auto">
                                     <div class="alert alert-info alert-modern">
@@ -342,7 +347,7 @@
                 </div>
 
                 <!-- Endpoint Tab -->
-                <div id="endpoint-content" class="tab-pane d-none">
+                <div id="endpoint-content" class="tab-pane">
                     <div class="row justify-content-center">
                         <div class="col-lg-8">
                             <h4 class="text-center mb-4">🌐 Fetch Data from API Endpoint</h4>
@@ -354,12 +359,16 @@
                                     <button class="btn btn-modern" id="fetch-btn">⬇️ Fetch Data</button>
                                 </div>
                             </div>
+                            <div class="alert alert-warning alert-modern">
+                                <strong>⚠️ CORS Notice:</strong> Make sure your API endpoint supports CORS or use a proxy service. 
+                                Some endpoints may require authentication headers.
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Sample Data Tab -->
-                <div id="sample-content" class="tab-pane d-none">
+                <div id="sample-content" class="tab-pane">
                     <div class="text-center">
                         <div style="font-size: 4rem;">🧪</div>
                         <h4 class="mb-3">Try Sample Data</h4>
@@ -1197,9 +1206,10 @@
                     
                     // Show/hide tab content
                     document.querySelectorAll('.tab-pane').forEach(pane => {
-                        pane.classList.add('d-none');
+                        pane.classList.remove('show', 'active');
                     });
-                    document.getElementById(`${targetTab}-content`).classList.remove('d-none');
+                    const targetContent = document.getElementById(`${targetTab}-content`);
+                    targetContent.classList.add('show', 'active');
                 });
             });
             
