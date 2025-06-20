@@ -382,8 +382,7 @@
                 }
             };
 
-            // Handle GET request (Note: Due to CSP restrictions, this will show an error but demonstrates the functionality)
-            const handleGetRequest = async () => {
+          const handleGetRequest = async () => {
                 if (!endpoint.trim()) {
                     setError('Please enter a valid endpoint URL');
                     return;
@@ -393,27 +392,43 @@
                 setError(null);
 
                 try {
-                    // Note: This will fail due to CSP restrictions in the artifact environment
-                    // But the code demonstrates how it would work in a real application
+                    console.log('Fetching from:', endpoint); // Debug log
+                    
                     const response = await fetch(endpoint, {
                         method: 'GET',
                         headers: {
                             'Accept': 'application/json',
                             'Content-Type': 'application/json',
+                            // Add any required authentication headers here
+                            // 'Authorization': 'Bearer your-token',
+                            // 'X-API-Key': 'your-api-key',
                         },
                         mode: 'cors'
                     });
                     
+                    console.log('Response status:', response.status); // Debug log
+                    console.log('Response headers:', Object.fromEntries(response.headers.entries())); // Debug log
+                    
                     if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        // Get the response text to see what the server is actually returning
+                        const responseText = await response.text();
+                        console.log('Error response body:', responseText); // Debug log
+                        
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}. Response: ${responseText.substring(0, 200)}...`);
                     }
                     
-                    // const contentType = response.headers.get('content-type');
-                    // if (!contentType || !contentType.includes('application/json')) {
-                    //     throw new Error('Response is not valid JSON');
-                    // }
+                    // Check content type before parsing
+                    const contentType = response.headers.get('content-type');
+                    console.log('Content-Type:', contentType); // Debug log
+                    
+                    if (!contentType || !contentType.includes('application/json')) {
+                        const responseText = await response.text();
+                        console.log('Non-JSON response:', responseText); // Debug log
+                        throw new Error(`Expected JSON response but got: ${contentType}. Response: ${responseText.substring(0, 200)}...`);
+                    }
                     
                     const jsonData = await response.json();
+                    console.log('Parsed JSON:', jsonData); // Debug log
                     
                     let dataArray;
                     if (Array.isArray(jsonData)) {
@@ -444,8 +459,12 @@
                     setSuccess(`Successfully fetched ${dataArray.length} records from endpoint!`);
                     
                 } catch (err) {
+                    console.error('Fetch error:', err); // Debug log
+                    
                     if (err.name === 'TypeError' && err.message.includes('fetch')) {
-                        setError('Network error: Unable to reach the endpoint. Note: External API calls are restricted in this demo environment. Please use file upload or try the sample data.');
+                        setError('Network error: Unable to reach the endpoint. This could be due to CORS restrictions, network issues, or the endpoint being unavailable.');
+                    } else if (err.message.includes('<!DOCTYPE') || err.message.includes('&lt;!DOCTYPE')) {
+                        setError('Server returned HTML instead of JSON. This usually indicates an authentication error, server error, or wrong endpoint URL.');
                     } else {
                         setError(`Failed to fetch data: ${err.message}`);
                     }
