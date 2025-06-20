@@ -399,6 +399,7 @@
                         headers: {
                             'Accept': 'application/json',
                             'Content-Type': 'application/json',
+                            'ngrok-skip-browser-warning': 'true', // Skip ngrok browser warning
                             // Add any required authentication headers here
                             // 'Authorization': 'Bearer your-token',
                             // 'X-API-Key': 'your-api-key',
@@ -472,7 +473,6 @@
                     setIsLoading(false);
                 }
             };
-
             // Load sample data
             const loadSampleData = () => {
                 const sampleData = generateSampleData();
