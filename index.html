@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Response Analytics Dashboard</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.3.0/chart.umd.min.js"></script>
+    
+    <!-- React -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.22.5/babel.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+        }
+        
+        .metric-card {
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .metric-card.success { background: var(--success-gradient); }
+        .metric-card.info { background: var(--info-gradient); }
+        .metric-card.warning { background: var(--warning-gradient); }
+        .metric-card.danger { background: var(--danger-gradient); }
+        
+        .chart-container {
+            position: relative;
+            height: 350px;
+            padding: 20px;
+        }
+        
+        .upload-zone {
+            border: 3px dashed #6c757d;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            background: rgba(248, 249, 250, 0.8);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+        
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: #0d6efd;
+            background: rgba(13, 110, 253, 0.1);
+            transform: scale(1.02);
+        }
+        
+        .btn-gradient {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-radius: 15px;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            color: white;
+        }
+        
+        .btn-success-gradient {
+            background: var(--success-gradient);
+            border: none;
+            color: white;
+            font-weight: 600;
+            border-radius: 15px;
+        }
+        
+        .btn-info-gradient {
+            background: var(--info-gradient);
+            border: none;
+            color: white;
+            font-weight: 600;
+            border-radius: 15px;
+        }
+        
+        .status-badge {
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(13, 110, 253, 0.05);
+            transform: translateX(5px);
+            transition: all 0.2s ease;
+        }
+        
+        .highlight-cannot-comply {
+            background: linear-gradient(90deg, #ffe6e6 0%, #ffcccc 100%) !important;
+            border-left: 5px solid #dc3545 !important;
+        }
+        
+        .highlight-issue-reported {
+            background: linear-gradient(90deg, #fff3cd 0%, #ffeaa7 100%) !important;
+            border-left: 5px solid #ffc107 !important;
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        
+        .loading-spinner {
+            width: 3rem;
+            height: 3rem;
+            border: 0.3rem solid rgba(13, 110, 253, 0.2);
+            border-top: 0.3rem solid #0d6efd;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #764ba2;
+            box-shadow: 0 0 0 0.25rem rgba(118, 75, 162, 0.25);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .endpoint-input-group {
+            position: relative;
+        }
+        
+        .data-source-tabs .nav-link {
+            border-radius: 15px 15px 0 0;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .data-source-tabs .nav-link.active {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+        }
+        
+        .insight-card {
+            border-left: 5px solid;
+            border-radius: 0 15px 15px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .insight-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .insight-card.primary { border-left-color: #0d6efd; }
+        .insight-card.success { border-left-color: #198754; }
+        .insight-card.warning { border-left-color: #ffc107; }
+        .insight-card.danger { border-left-color: #dc3545; }
+        
+        .pagination .page-link {
+            border-radius: 10px;
+            margin: 0 2px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination .page-item.active .page-link {
+            background: var(--primary-gradient);
+            border-color: transparent;
+        }
+        
+        .icon {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            vertical-align: -0.125em;
+        }
+        
+        .cursor-pointer {
+            cursor: pointer;
+        }
+        
+        .bg-purple {
+            background-color: #6f42c1 !important;
+        }
+        
+        .text-purple {
+            color: #6f42c1 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark glass-card mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                📊 Task Response Analytics
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">
+                    📅 <span id="current-date"></span>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4">
+        <div id="root"></div>
+    </div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const Dashboard = () => {
+            const [data, setData] = useState([]);
+            const [filteredData, setFilteredData] = useState([]);
+            const [isLoading, setIsLoading] = useState(false);
+            const [error, setError] = useState(null);
+            const [success, setSuccess] = useState(null);
+            const [filters, setFilters] = useState({
+                messageType: 'all',
+                status: 'all',
+                searchUser: ''
+            });
+            const [currentPage, setCurrentPage] = useState(1);
+            const [highlightIssues, setHighlightIssues] = useState(false);
+            const [showInsights, setShowInsights] = useState(false);
+            const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+            const [activeTab, setActiveTab] = useState('upload');
+            const [endpoint, setEndpoint] = useState('');
+            
+            const chartRef = useRef(null);
+            const statusChartRef = useRef(null);
+            const statusChartInstance = useRef(null);
+            const responseChartInstance = useRef(null);
+            const fileInputRef = useRef(null);
+
+            const itemsPerPage = 12;
+
+            // Set current date
+            useEffect(() => {
+                const dateElement = document.getElementById('current-date');
+                if (dateElement) {
+                    dateElement.textContent = new Date().toLocaleDateString();
+                }
+            }, []);
+
+            // Auto-hide alerts
+            useEffect(() => {
+                if (error || success) {
+                    const timer = setTimeout(() => {
+                        setError(null);
+                        setSuccess(null);
+                    }, 5000);
+                    return () => clearTimeout(timer);
+                }
+            }, [error, success]);
+
+            // Sample data for demo
+            const generateSampleData = () => {
+                const messageTypes = ['morning_checkin', 'evening_checkin', 'mid_day_update', 'weekly_report'];
+                const statuses = ['acknowledged', 'sent', 'cannot_comply', 'issue_reported'];
+                const userNames = ['John Doe', 'Jane Smith', 'Mike Johnson', 'Sarah Wilson', 'Tom Brown', 'Lisa Davis'];
+                
+                const sampleData = [];
+                for (let i = 0; i < 50; i++) {
+                    const sentDate = new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000);
+                    const status = statuses[Math.floor(Math.random() * statuses.length)];
+                    
+                    sampleData.push({
+                        id: i + 1,
+                        user_name: userNames[Math.floor(Math.random() * userNames.length)],
+                        message_type: messageTypes[Math.floor(Math.random() * messageTypes.length)],
+                        status: status,
+                        sent_at: sentDate.toISOString(),
+                        acknowledged_at: status === 'acknowledged' ? new Date(sentDate.getTime() + Math.random() * 24 * 60 * 60 * 1000).toISOString() : null,
+                        message_content: `Sample message content for ${messageTypes[Math.floor(Math.random() * messageTypes.length)].replace(/_/g, ' ')}`
+                    });
+                }
+                return sampleData;
+            };
+
+            // Handle file upload
+            const handleFileUpload = async (file) => {
+                if (!file) return;
+                
+                setIsLoading(true);
+                setError(null);
+                
+                try {
+                    const text = await file.text();
+                    const jsonData = JSON.parse(text);
+                    
+                    let dataArray;
+                    if (Array.isArray(jsonData)) {
+                        dataArray = jsonData;
+                    } else if (jsonData.messages && Array.isArray(jsonData.messages)) {
+                        dataArray = jsonData.messages;
+                    } else if (jsonData.data && Array.isArray(jsonData.data)) {
+                        dataArray = jsonData.data;
+                    } else {
+                        throw new Error('Invalid data format: Expected array or object with "messages" or "data" property');
+                    }
+                    
+                    if (dataArray.length === 0) {
+                        throw new Error('No data found: Array is empty');
+                    }
+                    
+                    const requiredFields = ['user_name', 'message_type', 'status', 'sent_at'];
+                    const sampleRecord = dataArray[0];
+                    const missingFields = requiredFields.filter(field => !(field in sampleRecord));
+                    
+                    if (missingFields.length > 0) {
+                        throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+                    }
+                    
+                    setData(dataArray);
+                    setFilteredData(dataArray);
+                    setCurrentPage(1);
+                    setSuccess(`Successfully loaded ${dataArray.length} records from file!`);
+                    
+                } catch (err) {
+                    setError(`Failed to process file: ${err.message}`);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            // Handle GET request (Note: Due to CSP restrictions, this will show an error but demonstrates the functionality)
+            const handleGetRequest = async () => {
+                if (!endpoint.trim()) {
+                    setError('Please enter a valid endpoint URL');
+                    return;
+                }
+
+                setIsLoading(true);
+                setError(null);
+
+                try {
+                    // Note: This will fail due to CSP restrictions in the artifact environment
+                    // But the code demonstrates how it would work in a real application
+                    const response = await fetch(endpoint, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        mode: 'cors'
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        throw new Error('Response is not valid JSON');
+                    }
+                    
+                    const jsonData = await response.json();
+                    
+                    let dataArray;
+                    if (Array.isArray(jsonData)) {
+                        dataArray = jsonData;
+                    } else if (jsonData.messages && Array.isArray(jsonData.messages)) {
+                        dataArray = jsonData.messages;
+                    } else if (jsonData.data && Array.isArray(jsonData.data)) {
+                        dataArray = jsonData.data;
+                    } else {
+                        throw new Error('Invalid response format: Expected array or object with "messages" or "data" property');
+                    }
+                    
+                    if (dataArray.length === 0) {
+                        throw new Error('No data found in response');
+                    }
+                    
+                    const requiredFields = ['user_name', 'message_type', 'status', 'sent_at'];
+                    const sampleRecord = dataArray[0];
+                    const missingFields = requiredFields.filter(field => !(field in sampleRecord));
+                    
+                    if (missingFields.length > 0) {
+                        throw new Error(`Missing required fields in response: ${missingFields.join(', ')}`);
+                    }
+                    
+                    setData(dataArray);
+                    setFilteredData(dataArray);
+                    setCurrentPage(1);
+                    setSuccess(`Successfully fetched ${dataArray.length} records from endpoint!`);
+                    
+                } catch (err) {
+                    if (err.name === 'TypeError' && err.message.includes('fetch')) {
+                        setError('Network error: Unable to reach the endpoint. Note: External API calls are restricted in this demo environment. Please use file upload or try the sample data.');
+                    } else {
+                        setError(`Failed to fetch data: ${err.message}`);
+                    }
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            // Load sample data
+            const loadSampleData = () => {
+                const sampleData = generateSampleData();
+                setData(sampleData);
+                setFilteredData(sampleData);
+                setCurrentPage(1);
+                setSuccess(`Loaded ${sampleData.length} sample records for demonstration!`);
+            };
+
+            // Drag and drop handlers
+            const handleDragOver = (e) => {
+                e.preventDefault();
+                e.currentTarget.classList.add('dragover');
+            };
+
+            const handleDragLeave = (e) => {
+                e.preventDefault();
+                e.currentTarget.classList.remove('dragover');
+            };
+
+            const handleDrop = (e) => {
+                e.preventDefault();
+                e.currentTarget.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type === 'application/json') {
+                    handleFileUpload(files[0]);
+                }
+            };
+
+            // Calculate statistics
+            const stats = data.length > 0 ? {
+                total: data.length,
+                acknowledged: data.filter(d => d.status === 'acknowledged').length,
+                sent: data.filter(d => d.status === 'sent').length,
+                cannotComply: data.filter(d => d.status === 'cannot_comply').length,
+                issueReported: data.filter(d => d.status === 'issue_reported').length,
+                messageTypes: [...new Set(data.map(d => d.message_type).filter(type => type != null))].sort(),
+                missingData: data.filter(d => !d.user_name || d.user_name.trim() === '').length
+            } : { total: 0, acknowledged: 0, sent: 0, cannotComply: 0, issueReported: 0, messageTypes: [], missingData: 0 };
+
+            const getResponseRateByType = (messageType) => {
+                if (!messageType) return '0.0';
+                const typeMessages = data.filter(d => d.message_type === messageType);
+                const acknowledgedMessages = typeMessages.filter(d => d.status === 'acknowledged');
+                return typeMessages.length > 0 ? ((acknowledgedMessages.length / typeMessages.length) * 100).toFixed(1) : '0.0';
+            };
+
+            const messageTypeStats = stats.messageTypes.map(type => ({
+                type,
+                total: data.filter(d => d.message_type === type).length,
+                acknowledged: data.filter(d => d.message_type === type && d.status === 'acknowledged').length,
+                responseRate: getResponseRateByType(type)
+            }));
+
+            // Filter data
+            useEffect(() => {
+                if (data.length === 0) return;
+                
+                let filtered = data;
+
+                if (filters.messageType !== 'all') {
+                    filtered = filtered.filter(d => d.message_type === filters.messageType);
+                }
+
+                if (filters.status !== 'all') {
+                    filtered = filtered.filter(d => d.status === filters.status);
+                }
+
+                if (filters.searchUser) {
+                    filtered = filtered.filter(d => 
+                        d.user_name && d.user_name.toLowerCase().includes(filters.searchUser.toLowerCase())
+                    );
+                }
+
+                setFilteredData(filtered);
+                setCurrentPage(1);
+            }, [filters, data]);
+
+            // Sorting
+            const handleSort = (key) => {
+                let direction = 'asc';
+                if (sortConfig.key === key && sortConfig.direction === 'asc') {
+                    direction = 'desc';
+                }
+                setSortConfig({ key, direction });
+            };
+
+            const sortedData = [...filteredData].sort((a, b) => {
+                if (!sortConfig.key) return 0;
+                
+                const aValue = a[sortConfig.key];
+                const bValue = b[sortConfig.key];
+                
+                if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+                if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            // Initialize charts
+            useEffect(() => {
+                if (data.length === 0) return;
+
+                if (statusChartInstance.current) statusChartInstance.current.destroy();
+                if (responseChartInstance.current) responseChartInstance.current.destroy();
+
+                // Status chart
+                if (statusChartRef.current) {
+                    const ctx = statusChartRef.current.getContext('2d');
+                    statusChartInstance.current = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Acknowledged', 'Sent/Unacknowledged', 'Cannot Comply', 'Issue Reported'],
+                            datasets: [{
+                                data: [stats.acknowledged, stats.sent, stats.cannotComply, stats.issueReported],
+                                backgroundColor: ['#198754', '#6c757d', '#dc3545', '#ffc107'],
+                                borderWidth: 0,
+                                hoverOffset: 15
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 20,
+                                        usePointStyle: true,
+                                        font: { size: 12, weight: 'bold' }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: (context) => {
+                                            const percentage = ((context.parsed / stats.total) * 100).toFixed(1);
+                                            return `${context.label}: ${context.parsed} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            },
+                            cutout: '60%'
+                        }
+                    });
+                }
+
+                // Response rate chart
+                if (chartRef.current && messageTypeStats.length > 0) {
+                    const ctx = chartRef.current.getContext('2d');
+                    responseChartInstance.current = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: messageTypeStats.map(stat => 
+                                stat.type ? stat.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Unknown'
+                            ),
+                            datasets: [{
+                                label: 'Response Rate (%)',
+                                data: messageTypeStats.map(stat => parseFloat(stat.responseRate)),
+                                backgroundColor: ['#0d6efd', '#6f42c1', '#198754', '#ffc107', '#dc3545', '#6c757d'],
+                                borderRadius: 10,
+                                borderSkipped: false,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100,
+                                    grid: { color: 'rgba(0,0,0,0.1)' },
+                                    ticks: {
+                                        callback: (value) => value + '%',
+                                        font: { weight: 'bold' }
+                                    }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { font: { weight: 'bold' }, maxRotation: 45 }
+                                }
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: (context) => {
+                                            const stat = messageTypeStats[context.dataIndex];
+                                            return [
+                                                `Response Rate: ${context.parsed.y}%`,
+                                                `Total Messages: ${stat.total}`,
+                                                `Acknowledged: ${stat.acknowledged}`
+                                            ];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                return () => {
+                    if (statusChartInstance.current) statusChartInstance.current.destroy();
+                    if (responseChartInstance.current) responseChartInstance.current.destroy();
+                };
+            }, [data, stats]);
+
+            const formatDateTime = (dateString) => {
+                if (!dateString) return 'N/A';
+                try {
+                    return new Date(dateString).toLocaleString();
+                } catch {
+                    return 'Invalid Date';
+                }
+            };
+
+            const getStatusBadge = (status) => {
+                const styles = {
+                    acknowledged: 'bg-success',
+                    sent: 'bg-secondary',
+                    cannot_comply: 'bg-danger',
+                    issue_reported: 'bg-warning text-dark'
+                };
+                const labels = {
+                    acknowledged: 'Acknowledged',
+                    sent: 'Sent',
+                    cannot_comply: 'Cannot Comply',
+                    issue_reported: 'Issue Reported'
+                };
+                return React.createElement('span', {
+                    className: `status-badge ${styles[status]}`
+                }, labels[status]);
+            };
+
+            const exportCSV = () => {
+                const csvContent = [
+                    ['User Name', 'Message Type', 'Status', 'Sent Time', 'Acknowledged Time', 'Message Content'].join(','),
+                    ...sortedData.map(row => [
+                        row.user_name || 'N/A',
+                        row.message_type || 'Unknown',
+                        row.status,
+                        formatDateTime(row.sent_at),
+                        formatDateTime(row.acknowledged_at),
+                        (row.message_content || '').replace(/"/g, '""')
+                    ].map(field => `"${field}"`).join(','))
+                ].join('\n');
+
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `task_response_data_${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            };
+
+            const getSortIcon = (column) => {
+                if (sortConfig.key !== column) {
+                    return '↕️';
+                }
+                return sortConfig.direction === 'asc' ? '↑' : '↓';
+            };
+
+            const paginatedData = sortedData.slice(
+                (currentPage - 1) * itemsPerPage,
+                currentPage * itemsPerPage
+            );
+
+            const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+
+            const getPaginationItems = () => {
+                const items = [];
+                const maxVisible = 5;
+                let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+                let end = Math.min(totalPages, start + maxVisible - 1);
+                
+                if (end - start + 1 < maxVisible) {
+                    start = Math.max(1, end - maxVisible + 1);
+                }
+
+                for (let i = start; i <= end; i++) {
+                    items.push(i);
+                }
+                return items;
+            };
+
+            return React.createElement('div', { className: 'animate-fade-in' }, [
+                // Alerts
+                error && React.createElement('div', {
+                    key: 'error-alert',
+                    className: 'alert alert-danger alert-dismissible fade show',
+                    role: 'alert'
+                }, [
+                    '⚠️ ',
+                    error,
+                    React.createElement('button', {
+                        key: 'close-error',
+                        type: 'button',
+                        className: 'btn-close',
+                        onClick: () => setError(null)
+                    })
+                ]),
+                
+                success && React.createElement('div', {
+                    key: 'success-alert',
+                    className: 'alert alert-success alert-dismissible fade show',
+                    role: 'alert'
+                }, [
+                    '✅ ',
+                    success,
+                    React.createElement('button', {
+                        key: 'close-success',
+                        type: 'button',
+                        className: 'btn-close',
+                        onClick: () => setSuccess(null)
+                    })
+                ]),
+
+                // Welcome Header
+                React.createElement('div', {
+                    key: 'header',
+                    className: 'text-center mb-5'
+                }, React.createElement('div', {
+                    className: 'glass-card p-5'
+                }, [
+                    React.createElement('h1', {
+                        key: 'title',
+                        className: 'display-4 fw-bold mb-3'
+                    }, ['📊 Task Response Analytics']),
+                    React.createElement('p', {
+                        key: 'subtitle',
+                        className: 'lead text-muted'
+                    }, 'Comprehensive analysis and insights for task response data with real-time visualization')
+                ])),
+
+                // Data Source Section
+                data.length === 0 && React.createElement('div', {
+                    key: 'data-source',
+                    className: 'glass-card p-4 mb-4'
+                }, [
+                    React.createElement('ul', {
+                        key: 'tabs',
+                        className: 'nav nav-tabs data-source-tabs mb-4',
+                        role: 'tablist'
+                    }, [
+                        React.createElement('li', {
+                            key: 'upload-tab',
+                            className: 'nav-item',
+                            role: 'presentation'
+                        }, React.createElement('button', {
+                            className: `nav-link ${activeTab === 'upload' ? 'active' : ''}`,
+                            onClick: () => setActiveTab('upload')
+                        }, '📤 Upload File')),
+                        React.createElement('li', {
+                            key: 'endpoint-tab',
+                            className: 'nav-item',
+                            role: 'presentation'
+                        }, React.createElement('button', {
+                            className: `nav-link ${activeTab === 'endpoint' ? 'active' : ''}`,
+                            onClick: () => setActiveTab('endpoint')
+                        }, '🌐 Fetch from API')),
+                        React.createElement('li', {
+                            key: 'sample-tab',
+                            className: 'nav-item',
+                            role: 'presentation'
+                        }, React.createElement('button', {
+                            className: `nav-link ${activeTab === 'sample' ? 'active' : ''}`,
+                            onClick: () => setActiveTab('sample')
+                        }, '🧪 Try Sample Data'))
+                    ]),
+
+                    React.createElement('div', {
+                        key: 'tab-content',
+                        className: 'tab-content'
+                    }, [
+                        // Upload Tab
+                        activeTab === 'upload' && React.createElement('div', {
+                            key: 'upload-content',
+                            className: 'tab-pane fade show active'
+                        }, [
+                            React.createElement('div', {
+                                key: 'upload-zone',
+                                className: 'upload-zone p-5 text-center',
+                                onDragOver: handleDragOver,
+                                onDragLeave: handleDragLeave,
+                                onDrop: handleDrop,
+                                onClick: () => fileInputRef.current?.click()
+                            }, isLoading ? [
+                                React.createElement('div', {
+                                    key: 'loading',
+                                    className: 'loading-spinner mx-auto mb-3'
+                                }),
+                                React.createElement('h5', {
+                                    key: 'loading-text',
+                                    className: 'text-primary'
+                                }, 'Processing your data...')
+                            ] : [
+                                React.createElement('div', {
+                                    key: 'upload-icon',
+                                    style: { fontSize: '4rem' }
+                                }, '📤'),
+                                React.createElement('h4', {
+                                    key: 'upload-title',
+                                    className: 'mb-3'
+                                }, 'Drag & Drop JSON File'),
+                                React.createElement('p', {
+                                    key: 'upload-desc',
+                                    className: 'text-muted mb-4'
+                                }, 'Or click here to browse files'),
+                                React.createElement('div', {
+                                    key: 'upload-info',
+                                    className: 'row'
+                                }, React.createElement('div', {
+                                    className: 'col-md-8 mx-auto'
+                                }, React.createElement('div', {
+                                    className: 'alert alert-info'
+                                }, [
+                                    React.createElement('strong', { key: 'info-title' }, '💡 Supported Format:'),
+                                    React.createElement('ul', {
+                                        key: 'info-list',
+                                        className: 'mb-0 mt-2 text-start'
+                                    }, [
+                                        React.createElement('li', { key: 'info-1' }, 'JSON files with arrays or objects containing message data'),
+                                        React.createElement('li', { key: 'info-2' }, 'Required fields: user_name, message_type, status, sent_at'),
+                                        React.createElement('li', { key: 'info-3' }, 'Supports nested structures with "messages" or "data" properties')
+                                    ])
+                                ])))
+                            ]),
+                            React.createElement('input', {
+                                key: 'file-input',
+                                ref: fileInputRef,
+                                type: 'file',
+                                accept: '.json',
+                                className: 'd-none',
+                                onChange: (e) => e.target.files[0] && handleFileUpload(e.target.files[0])
+                            })
+                        ]),
+
+                        // Endpoint Tab
+                        activeTab === 'endpoint' && React.createElement('div', {
+                            key: 'endpoint-content',
+                            className: 'tab-pane fade show active'
+                        }, React.createElement('div', {
+                            className: 'row justify-content-center'
+                        }, React.createElement('div', {
+                            className: 'col-lg-8'
+                        }, [
+                            React.createElement('h4', {
+                                key: 'endpoint-title',
+                                className: 'text-center mb-4'
+                            }, '🌐 Fetch Data from API Endpoint'),
+                            React.createElement('div', {
+                                key: 'endpoint-input',
+                                className: 'mb-4'
+                            }, React.createElement('div', {
+                                className: 'input-group input-group-lg'
+                            }, [
+                                React.createElement('span', {
+                                    key: 'url-icon',
+                                    className: 'input-group-text'
+                                }, '🔗'),
+                                React.createElement('input', {
+                                    key: 'url-input',
+                                    type: 'url',
+                                    className: 'form-control',
+                                    placeholder: 'https://api.example.com/task-responses',
+                                    value: endpoint,
+                                    onChange: (e) => setEndpoint(e.target.value),
+                                    onKeyPress: (e) => e.key === 'Enter' && handleGetRequest(),
+                                    disabled: isLoading
+                                }),
+                                React.createElement('button', {
+                                    key: 'fetch-btn',
+                                    className: 'btn btn-gradient',
+                                    onClick: handleGetRequest,
+                                    disabled: isLoading || !endpoint.trim()
+                                }, isLoading ? [
+                                    React.createElement('span', {
+                                        key: 'loading-spinner',
+                                        className: 'spinner-border spinner-border-sm me-2'
+                                    }),
+                                    'Fetching...'
+                                ] : ['⬇️ Fetch Data'])
+                            ])),
+                            React.createElement('div', {
+                                key: 'cors-warning',
+                                className: 'alert alert-warning'
+                            }, [
+                                '⚠️ ',
+                                React.createElement('strong', { key: 'cors-title' }, 'CORS Notice: '),
+                                'Ensure your API endpoint supports CORS for browser requests. Note: External API calls are restricted in this demo environment.'
+                            ])
+                        ]))),
+
+                        // Sample Data Tab
+                        activeTab === 'sample' && React.createElement('div', {
+                            key: 'sample-content',
+                            className: 'tab-pane fade show active'
+                        }, React.createElement('div', {
+                            className: 'text-center'
+                        }, [
+                            React.createElement('div', {
+                                key: 'sample-icon',
+                                style: { fontSize: '4rem' }
+                            }, '🧪'),
+                            React.createElement('h4', {
+                                key: 'sample-title',
+                                className: 'mb-3'
+                            }, 'Try Sample Data'),
+                            React.createElement('p', {
+                                key: 'sample-desc',
+                                className: 'text-muted mb-4'
+                            }, 'Load 50 sample records to explore the dashboard features'),
+                            React.createElement('button', {
+                                key: 'sample-btn',
+                                className: 'btn btn-gradient btn-lg',
+                                onClick: loadSampleData
+                            }, '🚀 Load Sample Data')
+                        ]))
+                    ])
+                ]),
+
+                // Dashboard Content
+                data.length > 0 && React.createElement('div', {
+                    key: 'dashboard'
+                }, [
+                    // Filters Section
+                    React.createElement('div', {
+                        key: 'filters',
+                        className: 'glass-card p-4 mb-4'
+                    }, React.createElement('div', {
+                        className: 'row g-3 align-items-end'
+                    }, [
+                        React.createElement('div', {
+                            key: 'filter-type',
+                            className: 'col-md-3'
+                        }, [
+                            React.createElement('label', {
+                                key: 'type-label',
+                                className: 'form-label fw-semibold'
+                            }, '🏷️ Message Type'),
+                            React.createElement('select', {
+                                key: 'type-select',
+                                className: 'form-select',
+                                value: filters.messageType,
+                                onChange: (e) => setFilters(prev => ({ ...prev, messageType: e.target.value }))
+                            }, [
+                                React.createElement('option', { key: 'all-types', value: 'all' }, 'All Types'),
+                                ...stats.messageTypes.map(type => 
+                                    React.createElement('option', { key: type, value: type }, 
+                                        type ? type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Unknown Type'
+                                    )
+                                )
+                            ])
+                        ]),
+                        React.createElement('div', {
+                            key: 'filter-status',
+                            className: 'col-md-3'
+                        }, [
+                            React.createElement('label', {
+                                key: 'status-label',
+                                className: 'form-label fw-semibold'
+                            }, '✅ Status'),
+                            React.createElement('select', {
+                                key: 'status-select',
+                                className: 'form-select',
+                                value: filters.status,
+                                onChange: (e) => setFilters(prev => ({ ...prev, status: e.target.value }))
+                            }, [
+                                React.createElement('option', { key: 'all-status', value: 'all' }, 'All Statuses'),
+                                React.createElement('option', { key: 'ack', value: 'acknowledged' }, 'Acknowledged'),
+                                React.createElement('option', { key: 'sent', value: 'sent' }, 'Sent'),
+                                React.createElement('option', { key: 'cannot', value: 'cannot_comply' }, 'Cannot Comply'),
+                                React.createElement('option', { key: 'issue', value: 'issue_reported' }, 'Issue Reported')
+                            ])
+                        ]),
+                        React.createElement('div', {
+                            key: 'filter-user',
+                            className: 'col-md-3'
+                        }, [
+                            React.createElement('label', {
+                                key: 'user-label',
+                                className: 'form-label fw-semibold'
+                            }, '🔍 Search User'),
+                            React.createElement('input', {
+                                key: 'user-input',
+                                type: 'text',
+                                className: 'form-control',
+                                placeholder: 'Enter user name...',
+                                value: filters.searchUser,
+                                onChange: (e) => setFilters(prev => ({ ...prev, searchUser: e.target.value }))
+                            })
+                        ]),
+                        React.createElement('div', {
+                            key: 'filter-actions',
+                            className: 'col-md-3'
+                        }, React.createElement('div', {
+                            className: 'd-grid gap-2'
+                        }, React.createElement('button', {
+                            className: 'btn btn-info-gradient',
+                            onClick: () => setActiveTab('upload')
+                        }, '📂 Load New Data')))
+                    ])),
+
+                    // Key Metrics Cards
+                    React.createElement('div', {
+                        key: 'metrics',
+                        className: 'row g-4 mb-4'
+                    }, [
+                        React.createElement('div', {
+                            key: 'metric-total',
+                            className: 'col-lg-3 col-md-6'
+                        }, React.createElement('div', {
+                            className: 'card metric-card text-white h-100'
+                        }, React.createElement('div', {
+                            className: 'card-body'
+                        }, React.createElement('div', {
+                            className: 'd-flex justify-content-between align-items-start'
+                        }, [
+                            React.createElement('div', { key: 'total-content' }, [
+                                React.createElement('h6', {
+                                    key: 'total-title',
+                                    className: 'card-title opacity-75'
+                                }, 'Total Messages'),
+                                React.createElement('h2', {
+                                    key: 'total-value',
+                                    className: 'card-text fw-bold'
+                                }, stats.total.toLocaleString()),
+                                React.createElement('small', {
+                                    key: 'total-subtitle',
+                                    className: 'opacity-75'
+                                }, `${stats.messageTypes.length} message types`)
+                            ]),
+                            React.createElement('div', {
+                                key: 'total-icon',
+                                style: { fontSize: '3rem', opacity: 0.5 }
+                            }, '📊')
+                        ])))),
+
+                        React.createElement('div', {
+                            key: 'metric-response',
+                            className: 'col-lg-3 col-md-6'
+                        }, React.createElement('div', {
+                            className: 'card metric-card success text-white h-100'
+                        }, React.createElement('div', {
+                            className: 'card-body'
+                        }, React.createElement('div', {
+                            className: 'd-flex justify-content-between align-items-start'
+                        }, [
+                            React.createElement('div', { key: 'response-content' }, [
+                                React.createElement('h6', {
+                                    key: 'response-title',
+                                    className: 'card-title opacity-75'
+                                }, 'Response Rate'),
+                                React.createElement('h2', {
+                                    key: 'response-value',
+                                    className: 'card-text fw-bold'
+                                }, `${((stats.acknowledged / stats.total) * 100).toFixed(1)}%`),
+                                React.createElement('small', {
+                                    key: 'response-subtitle',
+                                    className: 'opacity-75'
+                                }, `${stats.acknowledged.toLocaleString()} acknowledged`)
+                            ]),
+                            React.createElement('div', {
+                                key: 'response-icon',
+                                style: { fontSize: '3rem', opacity: 0.5 }
+                            }, '✅')
+                        ])))),
+
+                        React.createElement('div', {
+                            key: 'metric-best',
+                            className: 'col-lg-3 col-md-6'
+                        }, React.createElement('div', {
+                            className: 'card metric-card info text-white h-100'
+                        }, React.createElement('div', {
+                            className: 'card-body'
+                        }, React.createElement('div', {
+                            className: 'd-flex justify-content-between align-items-start'
+                        }, [
+                            React.createElement('div', { key: 'best-content' }, [
+                                React.createElement('h6', {
+                                    key: 'best-title',
+                                    className: 'card-title opacity-75'
+                                }, 'Best Performer'),
+                                React.createElement('h6', {
+                                    key: 'best-value',
+                                    className: 'card-text fw-bold'
+                                }, messageTypeStats.length > 0 ? 
+                                    messageTypeStats.reduce((best, current) => 
+                                        parseFloat(current.responseRate) > parseFloat(best.responseRate) ? current : best
+                                    ).type?.replace(/_/g, ' ') || 'Unknown' : 'N/A'),
+                                React.createElement('small', {
+                                    key: 'best-subtitle',
+                                    className: 'opacity-75'
+                                }, messageTypeStats.length > 0 ? 
+                                    messageTypeStats.reduce((best, current) => 
+                                        parseFloat(current.responseRate) > parseFloat(best.responseRate) ? current : best
+                                    ).responseRate + '% rate' : 'No data')
+                            ]),
+                            React.createElement('div', {
+                                key: 'best-icon',
+                                style: { fontSize: '3rem', opacity: 0.5 }
+                            }, '🏆')
+                        ])))),
+
+                        React.createElement('div', {
+                            key: 'metric-issues',
+                            className: 'col-lg-3 col-md-6'
+                        }, React.createElement('div', {
+                            className: 'card metric-card warning text-white h-100'
+                        }, React.createElement('div', {
+                            className: 'card-body'
+                        }, React.createElement('div', {
+                            className: 'd-flex justify-content-between align-items-start'
+                        }, [
+                            React.createElement('div', { key: 'issues-content' }, [
+                                React.createElement('h6', {
+                                    key: 'issues-title',
+                                    className: 'card-title opacity-75'
+                                }, 'Issues Found'),
+                                React.createElement('h2', {
+                                    key: 'issues-value',
+                                    className: 'card-text fw-bold'
+                                }, stats.cannotComply + stats.issueReported),
+                                React.createElement('small', {
+                                    key: 'issues-subtitle',
+                                    className: 'opacity-75'
+                                }, 'Require attention')
+                            ]),
+                            React.createElement('div', {
+                                key: 'issues-icon',
+                                style: { fontSize: '3rem', opacity: 0.5 }
+                            }, '⚠️')
+                        ]))))
+                    ]),
+
+                    // Charts Section
+                    React.createElement('div', {
+                        key: 'charts',
+                        className: 'row g-4 mb-4'
+                    }, [
+                        React.createElement('div', {
+                            key: 'status-chart',
+                            className: 'col-lg-6'
+                        }, React.createElement('div', {
+                            className: 'glass-card h-100'
+                        }, [
+                            React.createElement('div', {
+                                key: 'status-header',
+                                className: 'card-header bg-transparent border-0 pt-4'
+                            }, React.createElement('h5', {
+                                className: 'card-title mb-0'
+                            }, '🥧 Status Distribution')),
+                            React.createElement('div', {
+                                key: 'status-body',
+                                className: 'card-body'
+                            }, React.createElement('div', {
+                                className: 'chart-container'
+                            }, React.createElement('canvas', { ref: statusChartRef })))
+                        ])),
+
+                        React.createElement('div', {
+                            key: 'response-chart',
+                            className: 'col-lg-6'
+                        }, React.createElement('div', {
+                            className: 'glass-card h-100'
+                        }, [
+                            React.createElement('div', {
+                                key: 'response-header',
+                                className: 'card-header bg-transparent border-0 pt-4'
+                            }, React.createElement('h5', {
+                                className: 'card-title mb-0'
+                            }, '📊 Response Rates by Type')),
+                            React.createElement('div', {
+                                key: 'response-body',
+                                className: 'card-body'
+                            }, [
+                                React.createElement('div', {
+                                    key: 'response-canvas',
+                                    className: 'chart-container'
+                                }, React.createElement('canvas', { ref: chartRef })),
+                                messageTypeStats.length > 0 && React.createElement('div', {
+                                    key: 'response-stats',
+                                    className: 'row g-2 mt-2'
+                                }, messageTypeStats.map((stat, index) => 
+                                    React.createElement('div', {
+                                        key: stat.type || index,
+                                        className: 'col-md-6'
+                                    }, React.createElement('div', {
+                                        className: 'alert alert-light mb-2 py-2'
+                                    }, [
+                                        React.createElement('div', {
+                                            key: 'stat-header',
+                                            className: 'd-flex justify-content-between'
+                                        }, [
+                                            React.createElement('small', {
+                                                key: 'stat-name',
+                                                className: 'fw-semibold'
+                                            }, stat.type ? stat.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Unknown'),
+                                            React.createElement('small', {
+                                                key: 'stat-rate',
+                                                className: 'text-primary fw-bold'
+                                            }, `${stat.responseRate}%`)
+                                        ]),
+                                        React.createElement('small', {
+                                            key: 'stat-total',
+                                            className: 'text-muted'
+                                        }, `${stat.total} total messages`)
+                                    ]))
+                                ))
+                            ])
+                        ]))
+                    ]),
+
+                    // Insights Section
+                    React.createElement('div', {
+                        key: 'insights',
+                        className: 'glass-card mb-4'
+                    }, [
+                        React.createElement('div', {
+                            key: 'insights-header',
+                            className: 'card-header bg-transparent border-0 pt-4'
+                        }, React.createElement('button', {
+                            className: 'btn btn-link text-decoration-none p-0 w-100 text-start',
+                            type: 'button',
+                            onClick: () => setShowInsights(!showInsights)
+                        }, React.createElement('h5', {
+                            className: 'card-title mb-0'
+                        }, [
+                            '💡 Key Insights & Analytics ',
+                            React.createElement('span', {
+                                key: 'insights-toggle',
+                                className: 'float-end'
+                            }, showInsights ? '🔽' : '▶️')
+                        ]))),
+                        showInsights && React.createElement('div', {
+                            key: 'insights-body',
+                            className: 'card-body'
+                        }, [
+                            React.createElement('div', {
+                                key: 'insights-grid',
+                                className: 'row g-3'
+                            }, [
+                                React.createElement('div', {
+                                    key: 'insight-1',
+                                    className: 'col-md-6'
+                                }, React.createElement('div', {
+                                    className: 'alert alert-primary insight-card primary'
+                                }, [
+                                    React.createElement('h6', {
+                                        key: 'insight-1-title',
+                                        className: 'alert-heading'
+                                    }, '📈 Message Analysis'),
+                                    React.createElement('p', {
+                                        key: 'insight-1-text',
+                                        className: 'mb-1'
+                                    }, [
+                                        React.createElement('strong', { key: 'types' }, stats.messageTypes.length),
+                                        ' different message types across ',
+                                        React.createElement('strong', { key: 'total' }, stats.total),
+                                        ' messages.'
+                                    ])
+                                ])),
+
+                                React.createElement('div', {
+                                    key: 'insight-2',
+                                    className: 'col-md-6'
+                                }, React.createElement('div', {
+                                    className: 'alert alert-success insight-card success'
+                                }, [
+                                    React.createElement('h6', {
+                                        key: 'insight-2-title',
+                                        className: 'alert-heading'
+                                    }, '✅ Engagement Score'),
+                                    React.createElement('p', {
+                                        key: 'insight-2-text',
+                                        className: 'mb-1'
+                                    }, [
+                                        React.createElement('strong', { key: 'rate' }, `${((stats.acknowledged / stats.total) * 100).toFixed(1)}%`),
+                                        ' overall acknowledgment rate'
+                                    ]),
+                                    React.createElement('small', {
+                                        key: 'insight-2-sub'
+                                    }, ((stats.acknowledged / stats.total) * 100) >= 70 ? 'Excellent' : 
+                                         ((stats.acknowledged / stats.total) * 100) >= 50 ? 'Good' : 'Needs Improvement' + ' team responsiveness')
+                                ])),
+
+                                React.createElement('div', {
+                                    key: 'insight-3',
+                                    className: 'col-md-6'
+                                }, React.createElement('div', {
+                                    className: 'alert alert-warning insight-card warning'
+                                }, [
+                                    React.createElement('h6', {
+                                        key: 'insight-3-title',
+                                        className: 'alert-heading'
+                                    }, '⚠️ Unacknowledged Messages'),
+                                    React.createElement('p', {
+                                        key: 'insight-3-text',
+                                        className: 'mb-1'
+                                    }, [
+                                        React.createElement('strong', { key: 'sent-count' }, stats.sent),
+                                        ` messages (${((stats.sent / stats.total) * 100).toFixed(1)}%) remain unacknowledged`
+                                    ]),
+                                    React.createElement('small', {
+                                        key: 'insight-3-sub'
+                                    }, 'Potential communication gap')
+                                ])),
+
+                                React.createElement('div', {
+                                    key: 'insight-4',
+                                    className: 'col-md-6'
+                                }, React.createElement('div', {
+                                    className: 'alert alert-danger insight-card danger'
+                                }, [
+                                    React.createElement('h6', {
+                                        key: 'insight-4-title',
+                                        className: 'alert-heading'
+                                    }, '🛡️ Compliance Issues'),
+                                    React.createElement('p', {
+                                        key: 'insight-4-text',
+                                        className: 'mb-1'
+                                    }, [
+                                        React.createElement('strong', { key: 'cannot' }, stats.cannotComply),
+                                        ' cannot comply, ',
+                                        React.createElement('strong', { key: 'issues' }, stats.issueReported),
+                                        ' issues reported'
+                                    ]),
+                                    React.createElement('small', {
+                                        key: 'insight-4-sub'
+                                    }, 'Require immediate attention')
+                                ]))
+                            ]),
+                            React.createElement('div', {
+                                key: 'insights-actions',
+                                className: 'row g-2 mt-3'
+                            }, [
+                                React.createElement('div', {
+                                    key: 'action-1',
+                                    className: 'col-auto'
+                                }, React.createElement('button', {
+                                    className: `btn ${highlightIssues ? 'btn-outline-danger' : 'btn-danger'}`,
+                                    onClick: () => setHighlightIssues(!highlightIssues)
+                                }, [
+                                    '👁️ ',
+                                    highlightIssues ? 'Hide' : 'Highlight',
+                                    ' Issues'
+                                ])),
+                                React.createElement('div', {
+                                    key: 'action-2',
+                                    className: 'col-auto'
+                                }, React.createElement('button', {
+                                    className: 'btn btn-success-gradient',
+                                    onClick: exportCSV
+                                }, '📥 Export Data'))
+                            ])
+                        ])
+                    ]),
+
+                    // Data Table
+                    React.createElement('div', {
+                        key: 'table',
+                        className: 'glass-card'
+                    }, [
+                        React.createElement('div', {
+                            key: 'table-header',
+                            className: 'card-header bg-transparent border-0 pt-4'
+                        }, React.createElement('div', {
+                            className: 'd-flex justify-content-between align-items-center'
+                        }, [
+                            React.createElement('h5', {
+                                key: 'table-title',
+                                className: 'card-title mb-0'
+                            }, `📋 Message Details (${filteredData.length.toLocaleString()} records)`),
+                            React.createElement('div', {
+                                key: 'page-badge',
+                                className: 'badge bg-primary fs-6'
+                            }, `Page ${currentPage} of ${totalPages}`)
+                        ])),
+                        React.createElement('div', {
+                            key: 'table-body',
+                            className: 'card-body p-0'
+                        }, [
+                            React.createElement('div', {
+                                key: 'table-responsive',
+                                className: 'table-responsive'
+                            }, React.createElement('table', {
+                                className: 'table table-hover mb-0'
+                            }, [
+                                React.createElement('thead', {
+                                    key: 'table-head',
+                                    className: 'table-light'
+                                }, React.createElement('tr', {}, [
+                                    React.createElement('th', {
+                                        key: 'th-user',
+                                        className: 'border-0 cursor-pointer',
+                                        onClick: () => handleSort('user_name')
+                                    }, React.createElement('div', {
+                                        className: 'd-flex align-items-center'
+                                    }, ['User Name ', getSortIcon('user_name')])),
+                                    React.createElement('th', {
+                                        key: 'th-type',
+                                        className: 'border-0 cursor-pointer',
+                                        onClick: () => handleSort('message_type')
+                                    }, React.createElement('div', {
+                                        className: 'd-flex align-items-center'
+                                    }, ['Message Type ', getSortIcon('message_type')])),
+                                    React.createElement('th', {
+                                        key: 'th-status',
+                                        className: 'border-0 cursor-pointer',
+                                        onClick: () => handleSort('status')
+                                    }, React.createElement('div', {
+                                        className: 'd-flex align-items-center'
+                                    }, ['Status ', getSortIcon('status')])),
+                                    React.createElement('th', {
+                                        key: 'th-sent',
+                                        className: 'border-0 cursor-pointer',
+                                        onClick: () => handleSort('sent_at')
+                                    }, React.createElement('div', {
+                                        className: 'd-flex align-items-center'
+                                    }, ['Sent Time ', getSortIcon('sent_at')])),
+                                    React.createElement('th', {
+                                        key: 'th-ack',
+                                        className: 'border-0'
+                                    }, 'Acknowledged Time'),
+                                    React.createElement('th', {
+                                        key: 'th-content',
+                                        className: 'border-0'
+                                    }, 'Message Content')
+                                ])),
+                                React.createElement('tbody', {
+                                    key: 'table-body'
+                                }, paginatedData.map((row, index) => 
+                                    React.createElement('tr', {
+                                        key: row.id || index,
+                                        className: `
+                                            ${highlightIssues && row.status === 'cannot_comply' ? 'highlight-cannot-comply' : ''}
+                                            ${highlightIssues && row.status === 'issue_reported' ? 'highlight-issue-reported' : ''}
+                                        `.trim()
+                                    }, [
+                                        React.createElement('td', {
+                                            key: 'td-user'
+                                        }, row.user_name ? 
+                                            React.createElement('div', {
+                                                className: 'fw-semibold'
+                                            }, row.user_name) :
+                                            React.createElement('span', {
+                                                className: 'badge bg-danger'
+                                            }, '⚠️ Missing Data')
+                                        ),
+                                        React.createElement('td', {
+                                            key: 'td-type'
+                                        }, React.createElement('span', {
+                                            className: `badge ${
+                                                row.message_type?.includes('morning') ? 'bg-info' : 
+                                                row.message_type?.includes('evening') ? 'bg-purple text-white' :
+                                                row.message_type?.includes('mid') ? 'bg-success' : 'bg-secondary'
+                                            }`
+                                        }, row.message_type ? row.message_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Unknown')),
+                                        React.createElement('td', {
+                                            key: 'td-status'
+                                        }, getStatusBadge(row.status)),
+                                        React.createElement('td', {
+                                            key: 'td-sent'
+                                        }, React.createElement('small', {
+                                            className: 'font-monospace text-muted'
+                                        }, formatDateTime(row.sent_at))),
+                                        React.createElement('td', {
+                                            key: 'td-ack'
+                                        }, row.acknowledged_at ? 
+                                            React.createElement('small', {
+                                                className: 'font-monospace text-success'
+                                            }, formatDateTime(row.acknowledged_at)) :
+                                            React.createElement('span', {
+                                                className: 'text-muted fst-italic'
+                                            }, 'Not acknowledged')
+                                        ),
+                                        React.createElement('td', {
+                                            key: 'td-content'
+                                        }, React.createElement('div', {
+                                            className: 'text-truncate',
+                                            style: { maxWidth: '200px' },
+                                            title: row.message_content
+                                        }, row.message_content || React.createElement('span', {
+                                            className: 'text-muted fst-italic'
+                                        }, 'No content')))
+                                    ])
+                                ))
+                            ])),
+                            
+                            // Pagination
+                            React.createElement('div', {
+                                key: 'pagination',
+                                className: 'card-footer bg-transparent border-0'
+                            }, React.createElement('div', {
+                                className: 'd-flex justify-content-between align-items-center'
+                            }, [
+                                React.createElement('div', {
+                                    key: 'pagination-info',
+                                    className: 'text-muted'
+                                }, `Showing ${((currentPage - 1) * itemsPerPage) + 1} to ${Math.min(currentPage * itemsPerPage, sortedData.length)} of ${sortedData.length} results`),
+                                React.createElement('nav', {
+                                    key: 'pagination-nav'
+                                }, React.createElement('ul', {
+                                    className: 'pagination pagination-sm mb-0'
+                                }, [
+                                    React.createElement('li', {
+                                        key: 'page-prev',
+                                        className: `page-item ${currentPage === 1 ? 'disabled' : ''}`
+                                    }, React.createElement('button', {
+                                        className: 'page-link',
+                                        onClick: () => setCurrentPage(currentPage - 1),
+                                        disabled: currentPage === 1
+                                    }, '◀')),
+                                    ...getPaginationItems().map(pageNum =>
+                                        React.createElement('li', {
+                                            key: `page-${pageNum}`,
+                                            className: `page-item ${currentPage === pageNum ? 'active' : ''}`
+                                        }, React.createElement('button', {
+                                            className: 'page-link',
+                                            onClick: () => setCurrentPage(pageNum)
+                                        }, pageNum))
+                                    ),
+                                    React.createElement('li', {
+                                        key: 'page-next',
+                                        className: `page-item ${currentPage === totalPages ? 'disabled' : ''}`
+                                    }, React.createElement('button', {
+                                        className: 'page-link',
+                                        onClick: () => setCurrentPage(currentPage + 1),
+                                        disabled: currentPage === totalPages
+                                    }, '▶'))
+                                ]))
+                            ]))
+                        ])
+                    ]),
+
+                    // Footer
+                    React.createElement('div', {
+                        key: 'footer',
+                        className: 'text-center mt-4 p-3 glass-card'
+                    }, React.createElement('p', {
+                        className: 'text-muted mb-0'
+                    }, [
+                        '⚙️ Dashboard powered by React, Bootstrap & Chart.js • Last updated: ',
+                        new Date().toLocaleString()
+                    ]))
+                ])
+            ]);
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(Dashboard));
